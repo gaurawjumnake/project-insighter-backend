@@ -15,6 +15,8 @@ class AccountDashboard(Base):
     
     # Basic Information
     account_name = Column(String(255), nullable=False)
+    account_leader = Column(String(255), nullable=True)
+
     domain = Column(String(255), nullable=True)
     company_revenue = Column(Numeric(15, 2), nullable=True)
     know_customer_value_chain = Column(Boolean, default=False, nullable=True)
@@ -27,6 +29,14 @@ class AccountDashboard(Base):
     # Engagement Metrics
     engagement_age = Column(Integer, nullable=True)  # In months as of Jan 2026
     last_year_business_done = Column(Numeric(15, 2), nullable=True)  # USD Jan 25-Dec 25
+    
+    # New Financials
+    target_2026 = Column(Numeric(15, 2), nullable=True)
+    current_revenue = Column(Numeric(15, 2), nullable=True)
+    forecast_revenue = Column(Numeric(15, 2), nullable=True)
+    shortfall = Column(Numeric(15, 2), nullable=True)
+    account_health_score = Column(Numeric(5, 2), nullable=True)
+
     target_projection_2026_accounts = Column(Numeric(15, 2), nullable=True)
     target_projection_2026_delivery = Column(Numeric(15, 2), nullable=True)
     current_pipeline_value = Column(Numeric(15, 2), nullable=True)  # Next 6-12 months
