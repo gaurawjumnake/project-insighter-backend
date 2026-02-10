@@ -44,7 +44,7 @@ def create_account(
 
 @router.get("/{account_id}", response_model=AccountDashboardResponse)
 def read_account(
-    account_id: UUID,
+    account_id: UUID, 
     db: Session = Depends(get_db)
 ):
     """
