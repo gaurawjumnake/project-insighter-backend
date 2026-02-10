@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 import uuid
 from backend.app.db.base import Base
+from datetime import datetime
 
 
 class AccountDashboard(Base):
@@ -53,5 +54,7 @@ class AccountDashboard(Base):
     miro_board_link = Column(String(500), nullable=True)
     
     # Timestamps
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    # created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    # updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow)
