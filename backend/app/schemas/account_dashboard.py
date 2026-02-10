@@ -10,6 +10,7 @@ IST = ZoneInfo("Asia/Kolkata")
 class AccountDashboardBase(BaseModel):
     """Base schema for Account Dashboard."""
     account_name: str
+    account_leader: Optional[str] = None
     domain: Optional[str] = None
     company_revenue: Optional[float] = None
     know_customer_value_chain: Optional[bool] = False
@@ -20,6 +21,14 @@ class AccountDashboardBase(BaseModel):
     where_we_fit_in_value_chain: Optional[str] = None
     engagement_age: Optional[int] = None
     last_year_business_done: Optional[float] = None
+
+    # New Financials
+    target_2026: Optional[float] = None
+    current_revenue: Optional[float] = None
+    forecast_revenue: Optional[float] = None
+    shortfall: Optional[float] = None
+    account_health_score: Optional[float] = None
+
     target_projection_2026_accounts: Optional[float] = None
     target_projection_2026_delivery: Optional[float] = None
     current_pipeline_value: Optional[float] = None
@@ -47,6 +56,8 @@ class AccountDashboardCreate(AccountDashboardBase):
 class AccountDashboardUpdate(BaseModel):
     """All fields optional for partial updates."""
     account_name: Optional[str] = None
+    account_leader: Optional[str] = None
+
     domain: Optional[str] = None
     company_revenue: Optional[float] = None
     know_customer_value_chain: Optional[bool] = None
@@ -57,6 +68,14 @@ class AccountDashboardUpdate(BaseModel):
     where_we_fit_in_value_chain: Optional[str] = None
     engagement_age: Optional[int] = None
     last_year_business_done: Optional[float] = None
+    
+    # New Financials
+    target_2026: Optional[float] = None
+    current_revenue: Optional[float] = None
+    forecast_revenue: Optional[float] = None
+    shortfall: Optional[float] = None
+    account_health_score: Optional[float] = None
+
     target_projection_2026_accounts: Optional[float] = None
     target_projection_2026_delivery: Optional[float] = None
     current_pipeline_value: Optional[float] = None
