@@ -1,46 +1,3 @@
-# from fastapi import FastAPI
-# from fastapi.middleware.cors import CORSMiddleware
-# from backend.app.api import api_router
-
-# # Create FastAPI application
-# app = FastAPI(
-#     title="Project Insighter API",
-#     description="API for managing account dashboards and stakeholder details",
-#     version="1.0.0"
-# )
-
-# # Configure CORS
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],  # In production, replace with specific origins
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
-# # Include API router
-# app.include_router(api_router, prefix="/api/v1")
-
-
-# @app.get("/")
-# def root():
-#     """Root endpoint."""
-#     return {
-#         "message": "Welcome to Project Insighter API",
-#         "docs": "/docs",
-#         "version": "1.0.0"
-#     }
-
-
-# @app.get("/health")
-# def health_check():
-#     """Health check endpoint."""
-#     return {"status": "healthy"}
-
-
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.api import account_dashboard, stakeholder_details
@@ -85,6 +42,11 @@ app.include_router(
     tags=["Stakeholder Details"]
 )
 
+# app.include_router(
+#     export_data.router,
+#     prefix="/api/v1/export-data",
+#     tags=["Export Data"]
+# )
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Account & Stakeholder API"}

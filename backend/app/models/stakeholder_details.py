@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Text, Boolean, DateTime, text
 from sqlalchemy.dialects.postgresql import UUID
 from backend.app.db.base import Base
-from datetime import datetime 
+from datetime import datetime,timezone
 
 class StakeholderDetails(Base):
     """Stakeholder Details model for storing stakeholder and competitive information."""
@@ -36,5 +36,17 @@ class StakeholderDetails(Base):
     technical_audit_frequency = Column(String, nullable=True)
     
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    # created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    # updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
