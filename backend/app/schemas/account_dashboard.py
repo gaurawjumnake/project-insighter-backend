@@ -10,7 +10,7 @@ class AccountDashboardBase(BaseModel):
     company_revenue: Optional[float] = None
     know_customer_value_chain: Optional[bool] = False
     account_focus: Optional[str] = None
-    delivery_unit: Optional[str] = None
+    # Removed: delivery_unit
     delivery_owner: Optional[str] = None
     client_partner: Optional[str] = None
     where_we_fit_in_value_chain: Optional[str] = None
@@ -35,7 +35,7 @@ class AccountDashboardBase(BaseModel):
     identified_areas_cross_up_selling: Optional[str] = None
     nitor_executive_connect_frequency: Optional[str] = None
     growth_action_plan_30days_ready: Optional[bool] = False
-    miro_board_link: Optional[str] = None
+    account_research_link: Optional[str] = None
 
 class AccountDashboardCreate(AccountDashboardBase):
     pass
@@ -47,7 +47,6 @@ class AccountDashboardUpdate(BaseModel):
     company_revenue: Optional[float] = None
     know_customer_value_chain: Optional[bool] = None
     account_focus: Optional[str] = None
-    delivery_unit: Optional[str] = None
     delivery_owner: Optional[str] = None
     client_partner: Optional[str] = None
     where_we_fit_in_value_chain: Optional[str] = None
@@ -72,7 +71,7 @@ class AccountDashboardUpdate(BaseModel):
     identified_areas_cross_up_selling: Optional[str] = None
     nitor_executive_connect_frequency: Optional[str] = None
     growth_action_plan_30days_ready: Optional[bool] = None
-    miro_board_link: Optional[str] = None
+    account_research_link: Optional[str] = None
 
 class AccountDashboardResponse(AccountDashboardBase):
     account_id: UUID

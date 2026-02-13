@@ -15,7 +15,6 @@ from backend.doc_insighter.tools.app_logger import Logger
 log = Logger()
 router = APIRouter()
 
-
 @router.post("/", response_model=AccountDashboardResponse, status_code=status.HTTP_201_CREATED)
 def create_account(
     account_in: AccountDashboardCreate,
@@ -25,7 +24,7 @@ def create_account(
     Create a new account dashboard entry.
     """
     log.log_info(
-        f"API: creating account dashboard entry | payload={account_in.dict()}"
+        f"API: creating account dashboard entry | payload={account_in.model_dump()}"
     )
 
     try:
@@ -36,11 +35,9 @@ def create_account(
         return account
 
     except Exception as e:
-        log.log_error(
-            f"API: failed to create account dashboard | error={e}"
-        )
+        log.log_error(f"API: failed to create account dashboard | error={e}")
+        # Re-raise so FastAPI returns 500 or handles it globally
         raise
-
 
 @router.get("/{account_id}", response_model=AccountDashboardResponse)
 def read_account(
@@ -50,25 +47,18 @@ def read_account(
     """
     Get a specific account by ID.
     """
-    log.log_info(
-        f"API: fetching account dashboard | account_id={account_id}"
-    )
+    log.log_info(f"API: fetching account dashboard | account_id={account_id}")
 
     account = AccountDashboardService.get_by_id(db=db, account_id=account_id)
     if not account:
-        log.log_warning(
-            f"API: account dashboard not found | account_id={account_id}"
-        )
+        log.log_warning(f"API: account dashboard not found | account_id={account_id}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Account not found"
         )
 
-    log.log_info(
-        f"API: account dashboard retrieved | account_id={account_id}"
-    )
+    log.log_info(f"API: account dashboard retrieved | account_id={account_id}")
     return account
-
 
 @router.get("/", response_model=List[AccountDashboardResponse])
 def read_accounts(
@@ -79,17 +69,12 @@ def read_accounts(
     """
     Retrieve all accounts with pagination.
     """
-    log.log_info(
-        f"API: fetching account dashboards | skip={skip}, limit={limit}"
-    )
+    log.log_info(f"API: fetching account dashboards | skip={skip}, limit={limit}")
 
     accounts = AccountDashboardService.get_all(db=db, skip=skip, limit=limit)
 
-    log.log_info(
-        f"API: account dashboards retrieved | count={len(accounts)}"
-    )
+    log.log_info(f"API: account dashboards retrieved | count={len(accounts)}")
     return accounts
-
 
 @router.put("/{account_id}", response_model=AccountDashboardResponse)
 def update_account(
@@ -100,9 +85,10 @@ def update_account(
     """
     Update an account.
     """
+    # Use model_dump(exclude_unset=True) to only log what is actually being changed
     log.log_info(
         f"API: updating account dashboard | "
-        f"account_id={account_id}, payload={account_in.dict(exclude_unset=True)}"
+        f"account_id={account_id}, payload={account_in.model_dump(exclude_unset=True)}"
     )
 
     account = AccountDashboardService.update(
@@ -112,19 +98,14 @@ def update_account(
     )
 
     if not account:
-        log.log_warning(
-            f"API: account dashboard not found for update | account_id={account_id}"
-        )
+        log.log_warning(f"API: account dashboard not found for update | account_id={account_id}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Account not found"
         )
 
-    log.log_info(
-        f"API: account dashboard updated successfully | account_id={account_id}"
-    )
+    log.log_info(f"API: account dashboard updated successfully | account_id={account_id}")
     return account
-
 
 @router.delete("/{account_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_account(
@@ -134,45 +115,15 @@ def delete_account(
     """
     Delete an account.
     """
-    log.log_info(
-        f"API: deleting account dashboard | account_id={account_id}"
-    )
+    log.log_info(f"API: deleting account dashboard | account_id={account_id}")
 
     success = AccountDashboardService.delete(db=db, account_id=account_id)
     if not success:
-        log.log_warning(
-            f"API: account dashboard not found for deletion | account_id={account_id}"
-        )
+        log.log_warning(f"API: account dashboard not found for deletion | account_id={account_id}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Account not found"
         )
 
-    log.log_info(
-        f"API: account dashboard deleted successfully | account_id={account_id}"
-    )
+    log.log_info(f"API: account dashboard deleted successfully | account_id={account_id}")
     return None
-
-
-@router.get("/search/unit/{delivery_unit}", response_model=List[AccountDashboardResponse])
-def search_accounts_by_unit(
-    delivery_unit: str,
-    db: Session = Depends(get_db)
-):
-    """
-    Search accounts belonging to a specific Delivery Unit.
-    """
-    log.log_info(
-        f"API: searching account dashboards by delivery unit | delivery_unit={delivery_unit}"
-    )
-
-    accounts = AccountDashboardService.search_by_delivery_unit(
-        db=db,
-        delivery_unit=delivery_unit
-    )
-
-    log.log_info(
-        f"API: delivery unit search completed | "
-        f"delivery_unit={delivery_unit}, count={len(accounts)}"
-    )
-    return accounts

@@ -153,24 +153,4 @@ class AccountDashboardService:
             )
             raise
 
-    @staticmethod
-    def search_by_delivery_unit(
-        db: Session,
-        delivery_unit: str
-    ) -> List[AccountDashboard]:
-        """Search accounts by delivery unit."""
-        log.log_info(
-            f"Service: searching account dashboards by delivery unit | delivery_unit={delivery_unit}"
-        )
-
-        results = (
-            db.query(AccountDashboard)
-            .filter(AccountDashboard.delivery_unit == delivery_unit)
-            .all()
-        )
-
-        log.log_info(
-            f"Service: delivery unit search completed | "
-            f"delivery_unit={delivery_unit}, count={len(results)}"
-        )
-        return results
+    

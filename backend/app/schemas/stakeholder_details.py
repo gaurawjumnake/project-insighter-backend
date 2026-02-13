@@ -1,10 +1,7 @@
-from pydantic import BaseModel, ConfigDict, field_serializer
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
-from zoneinfo import ZoneInfo
-
-IST = ZoneInfo("Asia/Kolkata")
 
 class StakeholderDetailsBase(BaseModel):
     """Base schema for Stakeholder Details."""
@@ -25,7 +22,7 @@ class StakeholderDetailsBase(BaseModel):
     technical_audit_frequency: Optional[str] = None
 
 class StakeholderDetailsCreate(StakeholderDetailsBase):
-    """Schema for creating Stakeholder Details - used when user submits form."""
+    """Schema for creating Stakeholder Details."""
     account_id: UUID
 
 class StakeholderDetailsUpdate(BaseModel):
@@ -47,14 +44,10 @@ class StakeholderDetailsUpdate(BaseModel):
     technical_audit_frequency: Optional[str] = None
 
 class StakeholderDetailsResponse(StakeholderDetailsBase):
-    """Schema for Stakeholder Details response - returned to frontend."""
+    """Schema for Stakeholder Details response."""
     id: UUID
     account_id: UUID
     created_at: datetime
     updated_at: datetime
-
-    @field_serializer("created_at", "updated_at")
-    def convert_to_ist(self, value: datetime):
-        return value.astimezone(IST)
     
     model_config = ConfigDict(from_attributes=True)
