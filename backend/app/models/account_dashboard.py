@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from backend.app.db.base import Base
 from datetime import datetime
 import pytz
+import uuid
 
 # Helper function to get IST time
 def get_ist_time():
@@ -15,7 +16,7 @@ class AccountDashboard(Base):
     __tablename__ = "account_dashboard"
     
     # Primary Key
-    account_id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
+    account_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     
     # Basic Information
     account_name = Column(String, nullable=False)
