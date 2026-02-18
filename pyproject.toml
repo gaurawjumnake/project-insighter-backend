@@ -5,11 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "dotenv>=0.9.9",
+    "python-dotenv>=0.9.9",   # Changed from 'dotenv' (which is abandoned) to 'python-dotenv'
     "fastapi>=0.128.1",
     "loguru>=0.7.3",
     "pandas>=3.0.0",
-    "psycopg2>=2.9.11",
+    "psycopg2-binary>=2.9.11", # Changed to 'psycopg2-binary' to fix build error
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
     "pytz>=2025.2",
