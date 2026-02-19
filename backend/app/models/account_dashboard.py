@@ -21,9 +21,9 @@ class AccountDashboard(Base):
     # Basic Information
     account_name = Column(String, nullable=False)
     domain = Column(String, nullable=True)
-    company_revenue = Column(Float, nullable=True)
+    company_revenue = Column(String, nullable=True)
     know_customer_value_chain = Column(Boolean, default=False, nullable=True)
-    account_focus = Column(String, nullable=True)  # Platinum/Gold/Silver
+    account_focus = Column(String, nullable=True)  
     
     # Removed: delivery_unit
     
@@ -32,32 +32,32 @@ class AccountDashboard(Base):
     where_we_fit_in_value_chain = Column(Text, nullable=True)
     
     # Engagement Metrics
-    engagement_age = Column(Integer, nullable=True)
-    last_year_business_done = Column(Float, nullable=True)
-    target_projection_2026_accounts = Column(Float, nullable=True)
-    target_projection_2026_delivery = Column(Float, nullable=True)
-    current_pipeline_value = Column(Float, nullable=True)
+    engagement_age = Column(String, nullable=True)
+    last_year_business_done = Column(String, nullable=True)
+    target_projection_2026_accounts = Column(String, nullable=True)
+    target_projection_2026_delivery = Column(String, nullable=True)
+    current_pipeline_value = Column(String, nullable=True)
     revenue_attrition_possibility = Column(Text, nullable=True)
     current_engagement_areas = Column(Text, nullable=True)
-    team_size = Column(Integer, nullable=True)
+    team_size = Column(String, nullable=True)
     engagement_models = Column(Text, nullable=True)
     current_rate_card_health = Column(String, nullable=True)
-    number_of_active_projects = Column(Integer, nullable=True)
+    number_of_active_projects = Column(String, nullable=True)
     overall_delivery_health = Column(String, nullable=True)
-    current_nps = Column(Float, nullable=True)
+    current_nps = Column(String, nullable=True)
     
     # Champion Information
     champion_customer_side = Column(String, nullable=True)
     champion_profile = Column(Text, nullable=True)
     connect_with_decision_maker = Column(Boolean, default=False, nullable=True)
-    total_active_connects = Column(Integer, nullable=True)
+    total_active_connects = Column(String, nullable=True)
     
     # Strategic Planning
     visibility_client_roadmap_2026 = Column(Text, nullable=True)
     identified_areas_cross_up_selling = Column(Text, nullable=True)
     nitor_executive_connect_frequency = Column(String, nullable=True)
     growth_action_plan_30days_ready = Column(Boolean, default=False, nullable=True)
-    account_research_link = Column(String, nullable=True) # Renamed from miro_board_link
+    account_research_link = Column(String, nullable=True) 
     
     # Timestamps (IST)
     created_at = Column(DateTime(timezone=True), default=get_ist_time, nullable=False)
