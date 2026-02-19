@@ -1,0 +1,11 @@
+services:
+  project-backend:
+    build: .
+    container_name: project_insighter_backend
+    ports:
+      - "8000:8000"
+    # This securely injects your keys from your local .env file
+    # directly into the running container's memory
+    env_file:
+      - .env
+    restart: always
