@@ -24,6 +24,9 @@ RUN uv pip install --system --no-cache -r pyproject.toml
 # (But it skips .env because of .dockerignore)
 COPY . .
 
+# Expose the port FastAPI listens on
+EXPOSE 8000
+
 # 8. Command to run the app
 # Since main.py is in the root, we call "main:app"
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
