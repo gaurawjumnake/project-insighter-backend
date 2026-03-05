@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     DB_HOST: str = os.getenv("host", "localhost")
     DB_PORT: str = os.getenv("port", "5432")
     DB_NAME: str = os.getenv("dbname", "postgres")
+    SYSTEM_USER_ID: str = os.getenv("SYSTEM_USER_ID", "550e8400-e29b-41d4-a716-446655440000")
 
     # 2. Construct URL safely (handles special chars in password)
     @property
