@@ -3,7 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.app.api import account_dashboard, stakeholder_details
 from backend.app.db.base import Base
 from backend.app.db.session import engine
-
+from backend.app import models
+from backend.app.api import (
+    calendar_task, 
+    calendar_milestone, 
+    calendar_reminder, 
+    calendar_event
+)
 # Optional: Create tables automatically on startup (useful for dev)
 Base.metadata.create_all(bind=engine)
 
@@ -41,6 +47,13 @@ app.include_router(
     prefix="/api/v1/stakeholder-details",
     tags=["Stakeholder Details"]
 )
+app.include_router(calendar_task.router, prefix="/api/v1/calendar/tasks", tags=["Calendar Tasks"])
+app.include_router(calendar_milestone.router, prefix="/api/v1/calendar/milestones", tags=["Calendar Milestones"])
+app.include_router(calendar_reminder.router, prefix="/api/v1/calendar/reminders", tags=["Calendar Reminders"])
+app.include_router(calendar_event.router, prefix="/api/v1/calendar/events", tags=["Calendar View"])
+
+from mangum import Mangum
+handler = Mangum(app=app)
 
 # app.include_router(
 #     export_data.router,

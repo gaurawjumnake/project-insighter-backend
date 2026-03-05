@@ -20,3 +20,13 @@
 #     "ValueChainMetric",
 #     "Opportunity",
 # ]
+# We import all models here to ensure they are registered with SQLAlchemy's Base
+# regardless of which specific service is running.
+
+from .account_dashboard import AccountDashboard
+from .stakeholder_details import StakeholderDetails
+from .calendar_task import CalendarTask
+from .calendar_milestone import CalendarMilestone
+from .calendar_reminder import CalendarReminder
+from .calendar_reminder_users import CalendarReminderUsers
+from .calendar_event import CalendarEvents
