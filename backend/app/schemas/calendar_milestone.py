@@ -5,6 +5,7 @@ from datetime import datetime
 from backend.app.models.calendar_milestone import MilestoneImpactEnum
 
 class CalendarMilestoneBase(BaseModel):
+    account_id: Optional[UUID] = None
     project_id: Optional[UUID] = None
     target_date: Optional[datetime] = None
     owner_id: Optional[UUID] = None

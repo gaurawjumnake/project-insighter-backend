@@ -18,6 +18,7 @@ class CalendarMilestone(Base):
     created_at = Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"))
     updated_at = Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"), onupdate=datetime.now)
 
+    account_id = Column(UUID(as_uuid=True), nullable=True)
     project_id = Column(UUID(as_uuid=True), nullable=True)
     target_date = Column(DateTime(timezone=True), nullable=True)
     owner_id = Column(UUID(as_uuid=True), nullable=True)
