@@ -10,6 +10,11 @@ from backend.app.api import (
     calendar_reminder, 
     calendar_event
 )
+# from backend.doc_insighter.api import sow as sow_api
+# from backend.doc_insighter.api import wsr as wsr_api
+# from backend.doc_insighter.api import code_quality as code_quality_api
+# from backend.doc_insighter.api import tech_review as tech_review_api
+# from backend.doc_insighter.api import best_practices as best_practices_api
 # Optional: Create tables automatically on startup (useful for dev)
 Base.metadata.create_all(bind=engine)
 
@@ -51,6 +56,11 @@ app.include_router(calendar_task.router, prefix="/api/v1/calendar/tasks", tags=[
 app.include_router(calendar_milestone.router, prefix="/api/v1/calendar/milestones", tags=["Calendar Milestones"])
 app.include_router(calendar_reminder.router, prefix="/api/v1/calendar/reminders", tags=["Calendar Reminders"])
 app.include_router(calendar_event.router, prefix="/api/v1/calendar/events", tags=["Calendar View"])
+# app.include_router(sow_api.router,  prefix="/v1")
+# app.include_router(wsr_api.router,  prefix="/v1")
+# app.include_router(code_quality_api.router, prefix="/v1")
+# app.include_router(tech_review_api.router, prefix="/v1")
+# app.include_router(best_practices_api.router, prefix="/v1")
 
 from mangum import Mangum
 handler = Mangum(app=app)

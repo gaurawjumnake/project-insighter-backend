@@ -4,6 +4,7 @@ from uuid import UUID
 from datetime import datetime, date, time
 
 class CalendarReminderBase(BaseModel):
+    account_id: Optional[UUID] = None
     project_id: Optional[UUID] = None
     reminder_date: Optional[date] = None
     reminder_time: Optional[time] = None
