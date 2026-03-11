@@ -69,3 +69,8 @@ class AccountDashboard(Base):
         back_populates="account", 
         cascade="all, delete-orphan"
     )
+    documents = relationship(
+        "AccountDocument", 
+        back_populates="account", 
+        cascade="all, delete-orphan"
+    )
