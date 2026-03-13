@@ -29,6 +29,8 @@ origins = [
     "http://localhost",
     "http://localhost:3000",
     "http://localhost:8000",
+    "http://localhost:8080",
+    "https://d2qy9zmdaxe9p6.cloudfront.net"
     # Add your frontend URL here if different
 ]
 
