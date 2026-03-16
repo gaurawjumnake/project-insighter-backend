@@ -5,7 +5,7 @@ from datetime import datetime
 
 class ProjectDocumentOut(BaseModel):
     id: UUID
-    project_id : UUID
+    account_id: UUID
     content : Optional[str] = None
     document_type : Optional[str] = None
     created_at : datetime

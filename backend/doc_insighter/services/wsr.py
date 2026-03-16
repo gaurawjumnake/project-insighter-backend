@@ -1,0 +1,98 @@
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import UUID
+from pathlib import Path
+from typing import Any, Optional
+from uuid import uuid4
+from sqlalchemy.exc import IntegrityError
+from backend.doc_insighter.core.extraction_pipeline import ProcessAccountDocument
+from backend.doc_insighter.core.document_kpi_prompts import WSR
+from backend.doc_insighter.tools.app_logger import Logger
+from backend.app.models.document import AccountDocument
+
+log = Logger()
+
+doc_processor = ProcessAccountDocument(WSR.prompt,doc_name="WSR Document")
+
+def get_account_document(db: Session, account_id: UUID, document_type:str) -> Optional[AccountDocument]:
+    """Retrieve a single WSR document by account ID and document type."""
+    return db.query(AccountDocument).options(
+        joinedload(AccountDocument.account)
+    ).filter(AccountDocument.account_id == account_id,
+             AccountDocument.document_type.ilike(document_type.lower())).first()
+
+def process_document(db: Session, file_path: Path, account_id: UUID, dry_run: bool = False) -> dict[str, Any]:
+    """Process WSR document and return summary dict"""
+    
+    document_type="WSR"
+
+    if not file_path or not Path(file_path).exists():
+        log.log_debug(f"File path not found - {file_path}")
+        return {
+            "errors":[f"Document file not found: {file_path}"],
+            "records_processed": 0,
+            "records_created": 0
+        }
+    
+    content = doc_processor.run_doc_processor(file_path)
+    if not content:
+        log.log_error(f"Unable to Extract insights from document - {file_path}")
+        content = ""
+
+    if dry_run:
+        return {
+            "errors":[],
+            "records_processed": 1,
+            "records_created": 0,
+            "message": "Dry run successful - document validated"
+        }
+    
+    try:
+        existing_doc = get_account_document(db, account_id, document_type)
+        
+        if existing_doc:
+            existing_doc.content = content # type:ignore
+            existing_doc.document_type = document_type # type:ignore
+            doc_data = existing_doc
+            operation = "updated"
+            records_created = 0
+        else:
+            doc_data = AccountDocument(
+                id = uuid4(),
+                account_id=account_id,
+                content=content,
+                document_type=document_type
+            )
+            db.add(doc_data)
+            operation = "created"
+            records_created = 1
+        
+        db.commit()
+        db.refresh(doc_data)
+
+        log.log_info(f"File processed successfully and {operation} in db")
+        
+        return {
+            "errors":[],
+            "records_processed": 1,
+            "records_created": records_created,
+            "document_id": str(doc_data.id),
+            "operation": operation,
+            "message": f"{document_type} document {operation} successfully"
+        }
+        
+    except IntegrityError as e:
+        db.rollback()
+        log.log_warning(f"File not processed correctly. Error message - {e}")
+        return {
+            "errors":[f"Database integrity error: {str(e)}"],
+            "records_processed": 1,
+            "records_created": 0
+        }
+    except Exception as e:
+        db.rollback()
+        log.log_error(f"Unexpected error processing {document_type}: {e}")
+        return {
+            "errors": [f"Processing error: {str(e)}"],
+            "records_processed": 1,
+            "records_created": 0
+        }
