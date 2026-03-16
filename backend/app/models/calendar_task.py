@@ -22,8 +22,7 @@ class CalendarTask(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"), default=uuid.uuid4)
     created_at = Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"))
-    updated_at = Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"), onupdate=datetime.now)
-
+    updated_at = Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"), onupdate=lambda: datetime.now(ZoneInfo("UTC")))
     account_id = Column(UUID(as_uuid=True), nullable=True)
     priority = Column(Enum(TaskPriorityEnum, name="task_priority_enum"), server_default="MEDIUM", nullable=True)
     status = Column(Enum(TaskStatusEnum, name="task_status_enum"), server_default="TO_DO", nullable=True)

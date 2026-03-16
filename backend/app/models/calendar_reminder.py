@@ -4,14 +4,14 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from backend.app.db.base import Base
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 class CalendarReminder(Base):
     __tablename__ = "calendar_reminder"
 
     id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"), default=uuid.uuid4)
     created_at = Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"))
-    updated_at = Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"), onupdate=datetime.now)
-
+    updated_at = Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"), onupdate=lambda: datetime.now(ZoneInfo("UTC")))
     account_id = Column(UUID(as_uuid=True), nullable=True)
     project_id = Column(UUID(as_uuid=True), nullable=True)
     reminder_date = Column(Date, nullable=True)
