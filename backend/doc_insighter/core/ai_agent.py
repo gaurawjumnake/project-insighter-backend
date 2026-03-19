@@ -2,7 +2,6 @@ import pandas as pd
 import pymupdf4llm
 import os
 from crewai import Agent, Task, Crew, Process
-from backend.doc_insighter.tools.file_reader_tool import CustomFileReaderTool
 from pathlib import Path
 from backend.doc_insighter.tools.llm_models import llm
 from pydantic import BaseModel
@@ -24,40 +23,34 @@ class PDFToMarkdown_1:
         log.log_info(f"Converting pdf file:{pdf_path}")
         return pymupdf4llm.to_markdown(pdf_path)
 
-class DataExtractor_1:
     def __init__(self, verbose: bool = True) -> None:
         self.verbose = verbose
-        self.converter = PDFToMarkdown()
-        self.file_reader_tool = CustomFileReaderTool()
+        self.converter = PDFToMarkdown_1()
 
     def summarizer_assistant(self, requirements: str, input_text: str, output_schema: Optional[ResponseModel] = None):
         summary_agent = Agent(
             role="Document Analyst",
-            goal="Analyze input document or text and generate response as per user requriements.",
-            backstory="""You are expert document analyzer , reader and parser.
-            You are expirenced project manager who is haveing very good understanding about documnets used for IT related projects.
-            You know how to handle Markdown documents or text. 
-            You know how use input document or text to generate response which satisfies user requirements.""",
+            goal="Analyze input text and generate structured JSON response as per user requirements.",
+            backstory="""You are an expert document analyzer, reader, and parser.
+            You are an experienced project manager who has a very good understanding of documents used for IT related projects.
+            You know how to precisely analyze Markdown text to generate responses which satisfy user requirements.""",
             llm=llm,
-            tools=[self.file_reader_tool],
-            verbose= self.verbose
+            verbose=self.verbose
         )
             
         summary_task = Task(
             description="""
             Task is to analyze input document or text and extract useful information as per user requirements.
 
-            USER REQUIRMENTS:{user_requirement}
-            INPUT Document/TEXT :{input_text} (input can be file or markdown text directly)
+            USER REQUIREMENTS:{user_requirement}
+            INPUT TEXT :{input_text}
 
-            Follow below give guidelines:
-            1. Read 100 lines from input text/document. Repeat untill no more lines are left to read.
-            2. Use file reader tool. 
-            3. Understand the user requirements.
-            4. Generate response relevant to these requirements.
-
+            Follow below given guidelines:
+            1. Read and understand the user requirements.
+            2. Analyze the input text.
+            3. Generate the specific JSON response requested.
             """,
-            expected_output="""Response as per user requirements.""",
+            expected_output="""Response as per user requirements in JSON format.""",
             output_json= output_schema, #type:ignore
             agent=summary_agent,
         )
@@ -98,7 +91,6 @@ class DataExtractor_1:
 
 import pymupdf4llm
 from crewai import Agent, Task, Crew, Process
-from backend.doc_insighter.tools.file_reader_tool import CustomFileReaderTool
 from backend.doc_insighter.tools.llm_models import llm
 from backend.doc_insighter.tools.app_logger import Logger
 from pydantic import BaseModel
@@ -117,7 +109,6 @@ class DataExtractor:
     def __init__(self, verbose: bool = True) -> None:
         self.verbose = verbose
         self.converter = PDFToMarkdown()
-        self.file_reader_tool = CustomFileReaderTool()
 
     def _create_agent(self) -> Agent:
         """Create the document analyzer agent"""
@@ -126,9 +117,8 @@ class DataExtractor:
             goal="Extract key insights from project documents based on user requirements",
             backstory="""You are an expert document analyzer specializing in IT project documentation 
             (SOW, WSR, technical reviews, Jira reports, test reports, SQL query results).
-            You excel at parsing markdown content and extracting relevant information in JSON format.""",
+            You excel at parsing Markdown text content and extracting relevant information in strict JSON format.""",
             llm=llm,
-            tools=[self.file_reader_tool],
             verbose=self.verbose
         )
 
@@ -136,7 +126,7 @@ class DataExtractor:
         """Create the extraction task"""
         return Task(
             description=f"""
-            Analyze the input document/text and extract key insights as per user requirements.
+            Analyze the input text and extract key insights as per user requirements.
             
             USER REQUIREMENTS: {requirements}
             INPUT CONTENT: {input_text}
@@ -144,8 +134,8 @@ class DataExtractor:
             Guidelines:
             1. Read and process the input content systematically
             2. Focus on information relevant to user requirements
-            3. Extract key insights in structured JSON format
-            4. Handle project documents: SOW, WSR, technical reviews, Jira reports, test reports, SQL results
+            3. Extract key insights in strictly structured JSON format
+            4. Do not include random thoughts, only output the JSON.
             """,
             expected_output="Key insights in JSON format matching user requirements",
             output_json=output_schema, #type:ignore
