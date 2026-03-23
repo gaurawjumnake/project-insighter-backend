@@ -1,32 +1,33 @@
 from pydantic import BaseModel
-
+ 
 class SOW:
     prompt = """
-    Extract below given key insights from provided data
-        - Clear project objectives and timeline
-        - Detailed scope broken into 5 phases
+    Extract below given key insights from provided data. Ensure all extracted items are meaningful text descriptions. Skip any items that are purely numeric data or internal ID codes.
+        - Project objectives and high-level goals (descriptive text)
+        - Project timeline and major phases
+        - Detailed scope broken into 5 main phases
         - Specific deliverables with due dates
-        - Roles and responsibilities for both parties
+        - Roles and responsibilities (identify by designation/role)
         - Acceptance criteria for quality assurance
         - Risk management strategies
-        - Payment terms
+        - Payment terms and billing schedule
     """
-
+ 
 class WSR:
     prompt = """
-    Extract below given key insights from the provided Weekly Status Report (WSR):
+    Extract key descriptive insights from the provided Weekly Status Report (WSR). IMPORTANT: Do not extract raw numeric tables or calculation cells as 'stakeholders' or 'objectives'.
         - Project overview and reporting period
         - Overall project status (On Track, At Risk, Delayed)
-        - Key accomplishments and milestones achieved this week
+        - Key accomplishments and milestones achieved this week (bullet points)
         - Work in progress and current activities
         - Upcoming tasks and planned activities for next week
-        - Risks and issues identified
+        - Risks and issues identified (with descriptions)
         - Blockers and dependencies
-        - Resource utilization and team status
-        - Budget and timeline status
+        - Resource utilization and team status (List names or roles, skip numeric utilization percentages)
+        - Budget and timeline status (Summary text only)
         - Action items and decisions needed
     """
-
+ 
 class TechReview:
     prompt = """
     Analyze the provided technical document and extract key insights for a Technical Review Report:
@@ -37,9 +38,9 @@ class TechReview:
         - Security and Compliance (Authentication, authorization, data encryption)
         - Infrastructure and DevOps (Deployment strategy, CI/CD, containerization)
         - Critical Technical Risks and Single Points of Failure
-
+ 
     """
-
+ 
 class CodeQuality:
     prompt = """
     Analyze the provided code and extract key insights for a technical quality report:

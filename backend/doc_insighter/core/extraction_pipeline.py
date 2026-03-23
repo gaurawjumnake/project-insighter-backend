@@ -32,11 +32,34 @@ class ProcessAccountDocument: # CHANGED: Renamed from ProcessProjectDocument
                 'message': "incorrect file path",
                 'data': ""
             }
+        
+        # If it's a text file, just read it directly
+        if file_path.suffix.lower() == '.txt':
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    text = f.read()
+                return {'status': "success", 'message': "text file read", 'data': text}
+            except Exception as e:
+                return {'status': "error", 'message': str(e), 'data': ""}
+
+        # Otherwise, use the LlamaParser for PDFs/Images
         else:
             base_name = file_path.stem
             log.log_info(f"Running parser for: {file_path} with base_name: {base_name}")
             extracted_text = self.parser.extract_all_text(modified_name=base_name, file_path=str(file_path))
             clean_text = self.clean_text(extracted_text)
+            # return {
+            #     'status': "success",
+            #     'message': "file parsed successfully",
+            #     'data': clean_text
+            # }
+            if not clean_text.strip():
+                return {
+                    'status': "error",
+                    'message': "Parsing failed - empty content",
+                    'data': ""
+                }
+
             return {
                 'status': "success",
                 'message': "file parsed successfully",
@@ -45,6 +68,13 @@ class ProcessAccountDocument: # CHANGED: Renamed from ProcessProjectDocument
     
     def extract_insights(self, text: str) -> Dict[str, any]:
         try:
+            if not text or not text.strip():
+                log.log_error("Empty input text. Skipping insight extraction.")
+                return {
+                    "status": "error",
+                    "message": "Empty input text",
+                    "data": None
+                }
             response = self.extractor.extract_data(
                 input_file=text, 
                 user_requirement=self.prompt,
@@ -70,6 +100,11 @@ class ProcessAccountDocument: # CHANGED: Renamed from ProcessProjectDocument
             
             if parsed_data['status'] == 'success':
                 parsed_text = parsed_data['data']
+
+                if not parsed_text:
+                    log.log_error("No parsed text available. Skipping insight extraction.")
+                    return None
+                
                 insights = self.extract_insights(parsed_text)
                 
                 if insights['status'] == 'success':

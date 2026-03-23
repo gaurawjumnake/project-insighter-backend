@@ -100,7 +100,11 @@ class LlamaCloudDocumentParser:
         try:
             log.log_info(f"Starting to parse: {file_path}")
             
-            documents = self.parser.load_data(file_path)
+            # documents = self.parser.load_data(file_path)
+            import concurrent.futures
+
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                documents = list(executor.submit(self.parser.load_data, file_path).result())
             
             if not documents:
                 log.log_error(f"No content extracted from: {file_path}")
@@ -660,6 +664,10 @@ class LlamaCloudDocumentParser:
 
         all_text = []
         
+        if not parsed_data:
+            log.log_error("Parsing failed - no data returned")
+            return ""
+
         # Extract filename as context
         filename = parsed_data[0].get('filename', 'Unknown Document')
         all_text.append(f"# Document: {filename}\n")
