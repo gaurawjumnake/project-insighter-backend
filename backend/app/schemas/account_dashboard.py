@@ -31,6 +31,8 @@ class AccountDashboardBase(BaseModel):
     connect_with_decision_maker: Optional[bool] = False
     total_active_connects: Optional[str] = None
     visibility_client_roadmap_2026: Optional[str] = None
+    technical_roadmap: Optional[str] = None
+    product_roadmap: Optional[str] = None
     identified_areas_cross_up_selling: Optional[str] = None
     nitor_executive_connect_frequency: Optional[str] = None
     growth_action_plan_30days_ready: Optional[bool] = False
