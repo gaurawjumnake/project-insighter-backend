@@ -35,12 +35,12 @@ class Logger:
         )
         
         # Optional: Add file logger (uncomment if needed)
-        logger.add(
-            "app.log",
-            format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {extra[module]}:{extra[method]} | {message}",
-            level="DEBUG",
-            rotation="10 MB"
-        )
+        # logger.add(
+        #     "app.log",
+        #     format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {extra[module]}:{extra[method]} | {message}",
+        #     level="DEBUG",
+        #     rotation="10 MB"
+        # )
 
         logger.add(
             self.custom_sink,

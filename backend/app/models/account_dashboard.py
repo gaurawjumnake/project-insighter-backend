@@ -54,6 +54,8 @@ class AccountDashboard(Base):
     
     # Strategic Planning
     visibility_client_roadmap_2026 = Column(Text, nullable=True)
+    technical_roadmap = Column(Text, nullable=True)
+    product_roadmap = Column(Text, nullable=True)
     identified_areas_cross_up_selling = Column(Text, nullable=True)
     nitor_executive_connect_frequency = Column(String, nullable=True)
     growth_action_plan_30days_ready = Column(Boolean, default=False, nullable=True)
