@@ -31,6 +31,8 @@
 # # Since main.py is in the root, we call "main:app"
 # CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
+# Lmabdase based docker file instrucitons :-----------------------------
+
 # AWS Lambda Python 3.12 Base Image
 FROM public.ecr.aws/lambda/python:3.12
  

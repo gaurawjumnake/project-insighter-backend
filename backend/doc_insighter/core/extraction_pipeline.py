@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 from pathlib import Path
 
 from backend.doc_insighter.core.ai_agent import DataExtractor
@@ -66,7 +66,7 @@ class ProcessAccountDocument: # CHANGED: Renamed from ProcessProjectDocument
                 'data': clean_text
             }
     
-    def extract_insights(self, text: str) -> Dict[str, any]:
+    def extract_insights(self, text: str) -> Dict[str, Any]:
         try:
             if not text or not text.strip():
                 log.log_error("Empty input text. Skipping insight extraction.")
@@ -123,3 +123,6 @@ class ProcessAccountDocument: # CHANGED: Renamed from ProcessProjectDocument
 # doc_processor = ImportProcessProjectDocument()
 # file_path = "test_data/sample sow.pdf"
 # print(doc_processor.run_doc_processor(Path(file_path)))
+
+# Backward compatibility alias
+ProcessProjectDocument = ProcessAccountDocument

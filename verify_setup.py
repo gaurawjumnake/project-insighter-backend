@@ -10,7 +10,7 @@ def test_imports():
     try:
         # Test model imports
         print("\n1. Testing model imports...")
-        from backend.app.models import (
+        from backend.sales.app.models import (
             Account, Circle, Project, Stakeholder, StakeholderConnection,
             AccountCircleCoverage, AISuggestion, ValueChainMetric, Opportunity
         )
@@ -18,7 +18,7 @@ def test_imports():
         
         # Test schema imports
         print("\n2. Testing schema imports...")
-        from backend.app.schemas import (
+        from backend.sales.app.schemas import (
             AccountCreate, AccountResponse,
             CircleCreate, CircleResponse,
             ProjectCreate, ProjectResponse,
@@ -33,12 +33,12 @@ def test_imports():
         
         # Test database session
         print("\n3. Testing database session setup...")
-        from backend.app.db import Base, get_db, engine
+        from backend.db import Base, get_db, engine
         print("✓ Database session setup imported successfully!")
         
         # Test config
         print("\n4. Testing configuration...")
-        from backend.app.core.config import settings
+        from backend.core.config import settings
         print(f"✓ Configuration loaded successfully!")
         print(f"  Database URL: {settings.DATABASE_URL[:50]}...")
         
@@ -58,7 +58,7 @@ def test_database_connection():
     """Test database connection."""
     print("\n\n5. Testing database connection...")
     try:
-        from backend.app.db.session import test_connection
+        from backend.db.session import test_connection
         test_connection()
         print("✓ Database connection test completed!")
         return True
@@ -72,7 +72,7 @@ def create_all_tables():
     """Create all database tables."""
     print("\n\n6. Creating database tables...")
     try:
-        from backend.app.db.session import create_tables
+        from backend.db.session import create_tables
         create_tables()
         print("✓ All tables created successfully!")
         return True

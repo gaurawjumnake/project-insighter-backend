@@ -3,10 +3,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy import UUID
 from typing import Optional
 import shutil
+import os
+from uuid import uuid4
 
 from typing import Callable, Any
-from backend.app.db.session import get_db
-# from backend.app.services.import_service import ImportProjectData, ImportRevenueData
+from backend.db.session import get_db
+from backend.utitlites.s3_storage import upload_to_s3, get_s3_key
 from datetime import datetime
 from dotenv import load_dotenv
 from pathlib import Path
@@ -129,8 +131,7 @@ async def import_and_save_document(
     db: Session,
     import_function: Optional[Callable] = None,
     dry_run: bool = False,
-    
-    
+    subfolder: str = "project_docs",
 ) -> dict[str, Any]:
     """
     File import handler that saves files and processes them.
@@ -179,8 +180,11 @@ async def import_and_save_document(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to read file: {str(e)}")
     
+    file_uuid = str(uuid4())[:8]
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe_filename = f"{timestamp}_{document_type}_{file.filename}"
+    original_name = Path(file.filename).stem
+    extension = Path(file.filename).suffix
+    safe_filename = f"{file_uuid}_{document_type}_{original_name}_{timestamp}{extension}"
     temp_file_path = temp_dir / safe_filename
     
     try:
@@ -202,17 +206,18 @@ async def import_and_save_document(
             import_successful = not has_errors and not dry_run
             
             if import_successful:
-                final_file_path = success_dir / safe_filename
-                shutil.move(str(temp_file_path), str(final_file_path))
-                print(f"✓ File moved to success directory")
+                s3_key = get_s3_key(str(account_id), safe_filename, subfolder=subfolder)
+                upload_to_s3(temp_file_path, s3_key)
+                print(f"✓ File uploaded to S3: {s3_key}")
             elif not dry_run:
-                final_file_path = failed_dir / safe_filename
-                shutil.move(str(temp_file_path), str(final_file_path))
-                print(f"✗ File moved to failed directory")
-            else:
-                if temp_file_path.exists():
-                    temp_file_path.unlink()
-                    print(f"✓ Dry run complete, temp file deleted")
+                s3_key = get_s3_key(str(account_id), safe_filename, subfolder=f"{subfolder}_failed")
+                upload_to_s3(temp_file_path, s3_key)
+                print(f"✗ File uploaded to S3 failed dir: {s3_key}")
+            
+            # Clean up temp file
+            if temp_file_path.exists():
+                temp_file_path.unlink()
+                print(f"✓ Temp file cleaned up")
             
             summary["uploaded_file"] = safe_filename
             summary["file_size_mb"] = round(file_size / (1024 * 1024), 2)
@@ -222,14 +227,21 @@ async def import_and_save_document(
             
         except HTTPException:
             if temp_file_path.exists():
-                shutil.move(str(temp_file_path), str(failed_dir / safe_filename))
+                try:
+                    s3_key = get_s3_key(str(account_id), safe_filename, subfolder=f"{subfolder}_failed")
+                    upload_to_s3(temp_file_path, s3_key)
+                finally:
+                    temp_file_path.unlink(missing_ok=True)
             raise
         except Exception as e:
             if temp_file_path.exists():
                 try:
-                    shutil.move(str(temp_file_path), str(failed_dir / safe_filename))
+                    s3_key = get_s3_key(str(account_id), safe_filename, subfolder=f"{subfolder}_failed")
+                    upload_to_s3(temp_file_path, s3_key)
                 except:
                     pass
+                finally:
+                    temp_file_path.unlink(missing_ok=True)
             raise HTTPException(status_code=400, detail=f"Failed to import: {str(e)}")
     else:
         return {}

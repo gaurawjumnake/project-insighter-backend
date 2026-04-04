@@ -1,6 +1,6 @@
 import os
 import json
-from tools.app_logger import Logger
+from backend.doc_insighter.tools.app_logger import Logger
 log = Logger()
 
 def store_data_locally(data, input_path, output_path, file_type:str):

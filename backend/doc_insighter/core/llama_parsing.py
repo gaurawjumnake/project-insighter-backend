@@ -39,7 +39,7 @@ class LlamaCloudDocumentParser:
             return []
         
         self.max_timeout = max_timeout
-        self.save_parsed_file_path = os.getenv("TEMP_DIR") + "/" #type:ignore
+        # self.save_parsed_file_path = os.getenv("TEMP_DIR") + "/" #type:ignore
         
         self.parser = LlamaParse(
             api_key=api_key,
@@ -510,7 +510,7 @@ class LlamaCloudDocumentParser:
     def save_results(self, output_file: str = "parsed_results.json"):
         try:
             results_dict = [asdict(result) for result in self.results]
-            output_file = os.path.join(self.save_parsed_file_path + output_file) #type:ignore
+            # output_file = os.path.join(self.save_parsed_file_path + output_file) #type:ignore
 
             with open(output_file, 'w', encoding='utf-8') as f:
                 json.dump(results_dict, f, indent=2, ensure_ascii=False)
