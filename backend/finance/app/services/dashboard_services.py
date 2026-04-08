@@ -176,7 +176,7 @@ class MasterSummary:
         else:
             raise ValueError(f"Invalid date type: {type(date_input)}")
 
-    async def get_project_level_summary(
+    def get_project_level_summary(
         self, 
         db: Session,
         account_name: Optional[str] = None,
@@ -282,7 +282,7 @@ class MasterSummary:
             log.log_error(f"Error in get_project_level_summary: {str(e)}")
             raise ValueError(f"Failed to fetch project summary: {str(e)}")
 
-    async def get_dashboard_statistics(
+    def get_dashboard_statistics(
         self,
         db: Session,
         account_name: Optional[str] = None,
@@ -381,7 +381,7 @@ class MasterSummary:
             if p_type
         ]
 
-        projects = await self.get_project_level_summary(
+        projects = self.get_project_level_summary(
             db, account_name, project_name, project_status, 
             project_type, start_date, end_date
         )

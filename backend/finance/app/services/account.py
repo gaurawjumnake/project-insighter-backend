@@ -14,7 +14,7 @@ from backend.finance.app.schemas.account import AccountCreate, AccountUpdate, Ac
 from backend.doc_insighter.tools.app_logger import Logger
 log = Logger()
 
-async def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) -> List[Account]:
+def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) -> List[Account]:
     P = Project
     A = Account
     D = DeliveryUnit
@@ -28,6 +28,9 @@ async def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) 
             A.ai_recommendations,
             A.created_at.label("account_created_at"),
             A.account_manager,
+            A.target_revenue,
+            A.forecast_revenue,
+            A.shortfall,
             D.id.label("du_id"),
             D.name.label("du_name"),
             D.created_at.label("du_created_at"),
@@ -35,7 +38,7 @@ async def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) 
             func.count(func.distinct(case((P.status.ilike('active'), P.id)))).label("active_project_count"),
             func.count(func.distinct(case((P.status.ilike('inactive'), P.id)))).label("inactive_project_count"),
             func.coalesce(func.sum(P.ai_direct_hours + P.ai_assist_hours), 0).label("total_ai_hours"),
-            func.coalesce(func.sum(R.total_revenue), 0).label("total_revenue"),
+            func.coalesce(func.sum(R.total_revenue), 0).label("current_revenue"),
             func.coalesce(func.sum(R.ai_direct_revenue), 0).label("ai_direct_revenue"),
             func.coalesce(func.sum(R.ai_assisted_revenue), 0).label("ai_assisted_revenue"),
             func.coalesce(func.sum(R.total_ai_revenue), 0).label("total_ai_revenue"),
@@ -47,6 +50,7 @@ async def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) 
         .group_by(
             A.id, A.name, A.customer_overview, A.delivery_unit_id,
             A.ai_recommendations, A.created_at, A.account_manager,
+            A.target_revenue, A.forecast_revenue, A.shortfall,
             D.id, D.name, D.created_at
         )
         .order_by(
@@ -67,7 +71,10 @@ async def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) 
             delivery_unit_id=row.delivery_unit_id,
             ai_recommendations=row.ai_recommendations,
             created_at=row.account_created_at,
-            account_manager=row.account_manager
+            account_manager=row.account_manager,
+            target_revenue=row.target_revenue,
+            forecast_revenue=row.forecast_revenue,
+            shortfall=(row.target_revenue or 0.0) - (row.forecast_revenue or 0.0)
         )
         if row.du_id:
             account.delivery_unit = DeliveryUnit(
@@ -80,11 +87,11 @@ async def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) 
         account.active_project_count = int(row.active_project_count or 0)
         account.inactive_project_count = int(row.inactive_project_count or 0)
         account.total_ai_hours = safe_float(row.total_ai_hours)
-        account.total_revenue = safe_float(row.total_revenue)
+        account.current_revenue = safe_float(row.current_revenue)
         account.ai_revenue = safe_float(row.ai_direct_revenue) + safe_float(row.ai_assisted_revenue)
 
-        if account.total_revenue > 0:
-            account.ai_penetration_pct = (account.ai_revenue / account.total_revenue * 100)
+        if account.current_revenue > 0:
+            account.ai_penetration_pct = (account.ai_revenue / account.current_revenue * 100)
         else:
             account.ai_penetration_pct = 0.0
         
@@ -143,7 +150,7 @@ def get_account(db: Session, account_id: UUID) -> Optional[Account]:
         account.active_project_count = metrics.active_project_count or 0
         account.inactive_project_count = metrics.inactive_project_count or 0
         account.total_ai_hours = safe_float(metrics.total_ai_hours)
-        account.total_revenue = safe_float(metrics.total_revenue)
+        account.current_revenue = safe_float(metrics.current_revenue)
         account.ai_revenue = safe_float(metrics.ai_revenue)
         account.ai_penetration_pct = safe_float(metrics.ai_penetration_pct)
 
@@ -151,11 +158,11 @@ def get_account(db: Session, account_id: UUID) -> Optional[Account]:
             calc_ai_rev = sum(getattr(p, 'total_ai_revenue', 0.0) for p in account.projects)
             if calc_ai_rev > 0:
                 account.ai_revenue = calc_ai_rev
-                if account.total_revenue == 0:
-                    account.total_revenue = sum(getattr(p, 'total_revenue', 0.0) for p in account.projects)
+                if account.current_revenue == 0:
+                    account.current_revenue = sum(getattr(p, 'total_revenue', 0.0) for p in account.projects)
                 
-                if account.total_revenue > 0:
-                    account.ai_penetration_pct = (account.ai_revenue / account.total_revenue) * 100
+                if account.current_revenue > 0:
+                    account.ai_penetration_pct = (account.ai_revenue / account.current_revenue) * 100
                 else:
                     account.ai_penetration_pct = 0.0
     else:
@@ -163,7 +170,7 @@ def get_account(db: Session, account_id: UUID) -> Optional[Account]:
         account.active_project_count = 0
         account.inactive_project_count = 0
         account.total_ai_hours = 0.0
-        account.total_revenue = 0.0
+        account.current_revenue = 0.0
         account.ai_revenue = 0.0
         account.ai_penetration_pct = 0.0
 
@@ -180,9 +187,9 @@ def get_account(db: Session, account_id: UUID) -> Optional[Account]:
                 for p in account.projects
             )
             account.ai_revenue = sum(getattr(p, 'total_ai_revenue', 0.0) for p in account.projects)
-            account.total_revenue = sum(getattr(p, 'total_revenue', 0.0) for p in account.projects)
-            if account.total_revenue > 0:
-                account.ai_penetration_pct = (account.ai_revenue / account.total_revenue) * 100
+            account.current_revenue = sum(getattr(p, 'total_revenue', 0.0) for p in account.projects)
+            if account.current_revenue > 0:
+                account.ai_penetration_pct = (account.ai_revenue / account.current_revenue) * 100
     log.log_info("Accounts info with projects generated")
     return account
 
@@ -190,6 +197,7 @@ def create_account(db: Session, account_data: AccountCreate) -> Account:
     log.log_info(f"Creating account with data: {account_data}")
     try:
         db_account = Account(**account_data.model_dump())
+        db_account.shortfall = (db_account.target_revenue or 0.0) - (db_account.forecast_revenue or 0.0)
         db.add(db_account)
         db.commit()
         db.refresh(db_account)
@@ -198,13 +206,14 @@ def create_account(db: Session, account_data: AccountCreate) -> Account:
             db.execute(text("SELECT refresh_account_metrics_mv();"))
             db.commit()
         except Exception as e:
+            db.rollback()
             log.log_warning(f"Failed to refresh materialized view: {e}")
 
         db_account.project_count = 0
         db_account.active_project_count = 0
         db_account.inactive_project_count = 0
         db_account.total_ai_hours = 0.0
-        db_account.total_revenue = 0.0
+        db_account.current_revenue = 0.0
         db_account.ai_revenue = 0.0
         db_account.ai_penetration_pct = 0.0
         log.log_info(f"Account created successfully - {db_account.name}")
@@ -222,6 +231,8 @@ def update_account(db: Session, account_id: UUID, account_data: AccountUpdate) -
         for key, value in update_data.items():
             setattr(db_account, key, value)
         
+        db_account.shortfall = (db_account.target_revenue or 0.0) - (db_account.forecast_revenue or 0.0)
+        
         db.commit()
         db.refresh(db_account)
 
@@ -230,6 +241,7 @@ def update_account(db: Session, account_id: UUID, account_data: AccountUpdate) -
             db.commit()
             log.log_info(f"Account updated successfully - {db_account.name}")
         except Exception as e:
+            db.rollback()
             log.log_warning(f"Failed to refresh materialized view: {e}")
 
         return get_account(db, account_id)
@@ -260,6 +272,7 @@ def delete_account(db: Session, account_id: UUID) -> bool:
         db.execute(text("SELECT refresh_account_metrics_mv();"))
         db.commit()
     except Exception as e:
+        db.rollback()
         log.log_warning(f"Failed to refresh materialized view after deletion: {e}")
     
     return True
@@ -301,7 +314,7 @@ def get_accounts_with_filters(
         query = query.filter(Account.delivery_unit_id == delivery_unit_id)
     
     if min_revenue is not None:
-        query = query.filter(AccountMetricsMV.total_revenue >= min_revenue)
+        query = query.filter(AccountMetricsMV.current_revenue >= min_revenue)
     
     if has_active_projects is not None:
         if has_active_projects:
@@ -315,7 +328,7 @@ def get_accounts_with_filters(
     # Order by
     query = query.order_by(
         AccountMetricsMV.has_revenue.desc(),
-        AccountMetricsMV.total_revenue.desc(),
+        AccountMetricsMV.current_revenue.desc(),
         Account.created_at.desc()
     )
     
@@ -330,7 +343,7 @@ def get_accounts_with_filters(
         account.active_project_count = metrics.active_project_count
         account.inactive_project_count = metrics.inactive_project_count
         account.total_ai_hours = metrics.total_ai_hours
-        account.total_revenue = metrics.total_revenue
+        account.current_revenue = metrics.current_revenue
         account.ai_revenue = metrics.ai_revenue
         account.ai_penetration_pct = metrics.ai_penetration_pct
         
@@ -361,9 +374,9 @@ def get_top_revenue_accounts(db: Session, limit: int = 10) -> List[Account]:
     ).options(
         joinedload(Account.delivery_unit)
     ).filter(
-        AccountMetricsMV.total_revenue > 0
+        AccountMetricsMV.current_revenue > 0
     ).order_by(
-        AccountMetricsMV.total_revenue.desc()
+        AccountMetricsMV.current_revenue.desc()
     ).limit(limit)
     
     results = query.all()
@@ -374,7 +387,7 @@ def get_top_revenue_accounts(db: Session, limit: int = 10) -> List[Account]:
         account.active_project_count = metrics.active_project_count
         account.inactive_project_count = metrics.inactive_project_count
         account.total_ai_hours = metrics.total_ai_hours
-        account.total_revenue = metrics.total_revenue
+        account.current_revenue = metrics.current_revenue
         account.ai_revenue = metrics.ai_revenue
         account.ai_penetration_pct = metrics.ai_penetration_pct
         
@@ -468,7 +481,7 @@ def get_account_revenue_summary(
                 func.count(func.distinct(
                     case((P.status.ilike('inactive'), P.id)))
                 ).label("inactive_project_count"),
-                func.coalesce(func.sum(R.total_revenue), 0).label("total_revenue"),
+                func.coalesce(func.sum(R.total_revenue), 0).label("current_revenue"),
                 func.coalesce(func.sum(R.ai_direct_revenue), 0).label("total_ai_direct_revenue"),
                 func.coalesce(func.sum(R.ai_assisted_revenue), 0).label("total_ai_assisted_revenue"),
                 func.coalesce(func.sum(R.expected_revenue), 0).label("total_expected_revenue"),
@@ -503,7 +516,7 @@ def get_account_revenue_summary(
                     project_count=int(row.project_count or 0),
                     active_project_count=int(row.active_project_count or 0),
                     inactive_project_count=int(row.inactive_project_count or 0),
-                    total_revenue=safe_float(row.total_revenue),
+                    current_revenue=safe_float(row.current_revenue),
                     total_ai_direct_revenue=safe_float(row.total_ai_direct_revenue),
                     total_ai_assisted_revenue=safe_float(row.total_ai_assisted_revenue),
                     total_expected_revenue = safe_float(row.total_expected_revenue),
