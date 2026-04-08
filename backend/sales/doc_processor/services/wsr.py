@@ -8,8 +8,12 @@ from backend.doc_insighter.core.extraction_pipeline import ProcessAccountDocumen
 from backend.doc_insighter.core.document_kpi_prompts import WSR
 from backend.doc_insighter.tools.app_logger import Logger
 from backend.sales.app.models.document import AccountDocument
+from datetime import datetime, timezone, timedelta
 
 log = Logger()
+
+# IST timezone (UTC+5:30)
+IST = timezone(timedelta(hours=5, minutes=30))
 
 doc_processor = ProcessAccountDocument(WSR.prompt,doc_name="WSR Document")
 
@@ -50,17 +54,21 @@ def process_document(db: Session, file_path: Path, account_id: UUID, dry_run: bo
         existing_doc = get_account_document(db, account_id, document_type)
         
         if existing_doc:
+            ist_time = datetime.now(IST).replace(tzinfo=None)
             existing_doc.content = content # type:ignore
             existing_doc.document_type = document_type # type:ignore
+            existing_doc.created_at = ist_time
             doc_data = existing_doc
             operation = "updated"
             records_created = 0
         else:
+            ist_time = datetime.now(IST).replace(tzinfo=None)
             doc_data = AccountDocument(
                 id = uuid4(),
                 account_id=account_id,
                 content=content,
-                document_type=document_type
+                document_type=document_type,
+                created_at = ist_time
             )
             db.add(doc_data)
             operation = "created"
