@@ -18,7 +18,7 @@ def refresh_rev_master(db: Session = Depends(get_db)):
     return {"message": "Not implemented"}
 
 @router.get("/get_data", response_model=List[ProjectSummary])
-async def get_data(db: Session = Depends(get_db) ,
+def get_data(db: Session = Depends(get_db) ,
         account_name: Optional[str] = None,
         project_name: Optional[str] = None,
         project_status: Optional[str] = None,
@@ -29,7 +29,7 @@ async def get_data(db: Session = Depends(get_db) ,
     ):
     summary = MasterSummary()
     try:
-        response = await summary.get_project_level_summary(db,
+        response = summary.get_project_level_summary(db,
                                                     account_name,
                                                     project_name,
                                                     project_status,

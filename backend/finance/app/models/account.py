@@ -36,6 +36,9 @@ class Account(Base):
     ai_recommendations = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     account_manager = Column(String, nullable=True)
+    target_revenue = Column(Float, nullable=True, default=0.0)
+    forecast_revenue = Column(Float, nullable=True, default=0.0)
+    shortfall = Column(Float, nullable=True, default=0.0)
 
     projects = relationship("Project", back_populates="account")
 
@@ -50,7 +53,7 @@ class AccountMetricsMV(Base):
     active_project_count = Column(Integer)
     inactive_project_count = Column(Integer)
     total_ai_hours = Column(Float)
-    total_revenue = Column(Float)
+    current_revenue = Column(Float)
     ai_revenue = Column(Float)
     ai_penetration_pct = Column(Float)
     has_revenue = Column(Integer)

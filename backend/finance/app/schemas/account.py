@@ -10,6 +10,9 @@ class AccountBase(BaseModel):
     account_manager: Optional[str] = None
     customer_overview: Optional[str] = None
     ai_recommendations: Optional[str] = None
+    target_revenue: Optional[float] = 0.0
+    forecast_revenue: Optional[float] = 0.0
+    shortfall: Optional[float] = 0.0
 
 class AccountCreate(AccountBase):
     pass
@@ -20,6 +23,9 @@ class AccountUpdate(BaseModel):
     account_manager: Optional[str] = None
     customer_overview: Optional[str] = None
     ai_recommendations: Optional[str] = None
+    target_revenue: Optional[float] = None
+    forecast_revenue: Optional[float] = None
+    shortfall: Optional[float] = None
 
 class DeliveryUnitOut(BaseModel):
     id: UUID
@@ -33,7 +39,7 @@ class AccountOut(AccountBase):
     created_at: datetime
     delivery_unit: Optional[DeliveryUnitOut] = None
     project_count: int
-    total_revenue: float
+    current_revenue: float
     ai_revenue: float
     total_ai_hours: float
     active_project_count: int
@@ -43,7 +49,7 @@ class AccountOut(AccountBase):
     @computed_field
     @property
     def ai_penetration_pct(self) -> float:
-        total_rev = self.total_revenue or 0
+        total_rev = self.current_revenue or 0
         ai_rev = self.ai_revenue or 0
         if total_rev > 0 and ai_rev > 0:
             return (ai_rev / total_rev) * 100
@@ -69,7 +75,7 @@ class AccountRevenueSummary(BaseModel):
     project_count: int = 0
     active_project_count: int = 0
     inactive_project_count: int = 0
-    total_revenue: float = 0.0
+    current_revenue: float = 0.0
     total_ai_direct_revenue: float = 0.0
     total_ai_assisted_revenue: float = 0.0
     total_expected_revenue: float = 0.0
@@ -85,9 +91,9 @@ class AccountRevenueSummary(BaseModel):
     @computed_field
     @property
     def ai_penetration_pct(self) -> float:
-        """AI revenue as percentage of total revenue."""
-        if self.total_revenue > 0:
-            return (self.total_ai_revenue / self.total_revenue) * 100
+        """AI revenue as percentage of current revenue."""
+        if self.current_revenue > 0:
+            return (self.total_ai_revenue / self.current_revenue) * 100
         return 0.0
     
     class Config:

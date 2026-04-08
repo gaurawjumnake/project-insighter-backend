@@ -463,6 +463,7 @@ class ImportProjectData:
                     db.execute(text("SELECT refresh_account_metrics_mv();"))
                     db.commit()
                 except Exception as e:
+                    db.rollback()
                     log.log_error(f"Warning: Failed to refresh metrics: {e}")
                 log.log_info("\nSuccessfully committed all changes")
             except Exception as e:
@@ -689,6 +690,7 @@ class ImportRevenueData:
                     db.execute(text("SELECT refresh_account_metrics_mv();"))
                     db.commit()
                 except Exception as e:
+                    db.rollback()
                     log.log_warning(f"Warning: Failed to refresh metrics: {e}")
             except Exception as e:
                 db.rollback()
