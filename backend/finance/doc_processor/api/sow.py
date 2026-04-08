@@ -88,7 +88,7 @@ async def import_sow_document(
             temp_dir=TEMP_DIR,
             success_dir=TEMP_DIR,
             failed_dir=TEMP_DIR,
-            import_function=process_document,
+            import_function=wrapper_function,
             db=db,
             dry_run=dry_run,
             document_type="SOW",
