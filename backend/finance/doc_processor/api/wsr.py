@@ -73,6 +73,15 @@ async def import_wsr_document(
         )
 
     try:
+        
+        def wrapper_function(db, file_path, account_id, dry_run):
+            return process_document(
+                db=db, 
+                file_path=file_path, 
+                project_id=account_id, # Map it here
+                dry_run=dry_run
+            )
+ 
         result = await import_and_save_document(
             file=file,
             account_id=project_id, # type:ignore

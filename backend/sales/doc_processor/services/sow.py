@@ -54,8 +54,10 @@ def process_document(db: Session, file_path: Path, account_id: UUID, dry_run: bo
         existing_doc = get_account_document(db, account_id, document_type)
         
         if existing_doc:
+            ist_time = datetime.now(IST).replace(tzinfo=None)
             existing_doc.content = content # type:ignore
             existing_doc.document_type = document_type # type:ignore
+            existing_doc.created_at = ist_time
             doc_data = existing_doc
             operation = "updated"
             records_created = 0
