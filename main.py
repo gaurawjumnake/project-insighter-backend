@@ -30,6 +30,11 @@ from backend.finance.doc_processor.api import code_quality as fin_code_quality_a
 from backend.finance.doc_processor.api import tech_review as fin_tech_review_api
 from backend.finance.doc_processor.api import best_practices as fin_best_practices_api
 from backend.finance.doc_processor.api import project_docs as fin_project_docs_api
+
+# Generalized Analysis imports
+from backend.doc_insighter.api import generalized_analysis
+
+
 # Optional: Create tables automatically on startup (useful for dev)
 Base.metadata.create_all(bind=engine)
 
@@ -97,6 +102,13 @@ app.include_router(fin_code_quality_api.router, prefix="/api/v1/finance")
 app.include_router(fin_tech_review_api.router, prefix="/api/v1/finance")
 app.include_router(fin_best_practices_api.router, prefix="/api/v1/finance")
 app.include_router(fin_project_docs_api.router, prefix="/api/v1/finance")
+
+# Generalized Analysis Router (Researcher, Analyzer, Summarizer agents)
+app.include_router(
+    generalized_analysis.router,
+    prefix="/api/v1/analysis",
+    tags=["Generalized Analysis"]
+)
 
 from mangum import Mangum
 handler = Mangum(app=app)

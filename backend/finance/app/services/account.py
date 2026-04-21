@@ -74,7 +74,7 @@ def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) -> Lis
             account_manager=row.account_manager,
             target_revenue=row.target_revenue,
             forecast_revenue=row.forecast_revenue,
-            shortfall=(row.target_revenue or 0.0) - (row.forecast_revenue or 0.0)
+            shortfall=safe_float(row.target_revenue) - safe_float(row.current_revenue) - safe_float(row.forecast_revenue)
         )
         if row.du_id:
             account.delivery_unit = DeliveryUnit(
@@ -197,7 +197,7 @@ def create_account(db: Session, account_data: AccountCreate) -> Account:
     log.log_info(f"Creating account with data: {account_data}")
     try:
         db_account = Account(**account_data.model_dump())
-        db_account.shortfall = (db_account.target_revenue or 0.0) - (db_account.forecast_revenue or 0.0)
+        db_account.shortfall = (db_account.target_revenue or 0.0) - 0.0 - (db_account.forecast_revenue or 0.0)
         db.add(db_account)
         db.commit()
         db.refresh(db_account)
@@ -231,7 +231,11 @@ def update_account(db: Session, account_id: UUID, account_data: AccountUpdate) -
         for key, value in update_data.items():
             setattr(db_account, key, value)
         
-        db_account.shortfall = (db_account.target_revenue or 0.0) - (db_account.forecast_revenue or 0.0)
+        # Get current revenue from metrics MV
+        metrics = db.query(AccountMetricsMV).filter(AccountMetricsMV.account_id == account_id).first()
+        current_revenue = safe_float(metrics.current_revenue) if metrics else 0.0
+        
+        db_account.shortfall = (db_account.target_revenue or 0.0) - current_revenue - (db_account.forecast_revenue or 0.0)
         
         db.commit()
         db.refresh(db_account)
