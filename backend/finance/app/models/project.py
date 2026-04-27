@@ -30,6 +30,8 @@ class Project(Base):
     product_roadmap = Column(Text)
     code_coverage_pct = Column(Float, default=0.0)
     created_at = Column(DateTime, default=datetime.utcnow)
+    overall_insights = Column(JSONB, nullable=True)
+    overall_insights_generated_at = Column(DateTime, nullable=True)
     
     
     # Relationships

@@ -18,10 +18,11 @@
 
 
 from sqlalchemy import Column, String, DateTime, ForeignKey, text, Boolean, Integer, Float
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
 from backend.db.base import Base
 from datetime import datetime 
+from backend.finance.app.models.private_equity import PrivateEquity
 
 class Account(Base):
     __tablename__ = "accounts"
@@ -30,8 +31,10 @@ class Account(Base):
     name = Column(String, index=True, nullable=False)
     customer_overview = Column(String, nullable=True)
     delivery_unit_id = Column(UUID(as_uuid=True), ForeignKey("delivery_units.id"), nullable=False)
+    private_equity_id = Column(UUID(as_uuid=True), ForeignKey("private_equity.id"), nullable=True)
 
     delivery_unit = relationship("DeliveryUnit", back_populates="accounts")
+    private_equity = relationship("PrivateEquity", back_populates="accounts")
     
     ai_recommendations = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -39,6 +42,8 @@ class Account(Base):
     target_revenue = Column(Float, nullable=True, default=0.0)
     forecast_revenue = Column(Float, nullable=True, default=0.0)
     shortfall = Column(Float, nullable=True, default=0.0)
+    account_insights = Column(JSONB, nullable=True)
+    account_insights_generated_at = Column(DateTime, nullable=True)
 
     projects = relationship("Project", back_populates="account")
 
