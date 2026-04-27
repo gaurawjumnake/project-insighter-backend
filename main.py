@@ -24,6 +24,7 @@ from backend.finance.app.api import dashboard as fin_dashboard
 from backend.finance.app.api import export_data as fin_export_data
 from backend.finance.app.api import import_data as fin_import_data
 from backend.finance.app.api import pmo_docs as fin_pmo_docs
+from backend.finance.app.api import private_equity as fin_private_equity
 from backend.finance.doc_processor.api import sow as fin_sow_api
 from backend.finance.doc_processor.api import wsr as fin_wsr_api
 from backend.finance.doc_processor.api import code_quality as fin_code_quality_api
@@ -93,6 +94,7 @@ app.include_router(fin_dashboard.router, prefix="/api/v1", tags=["Finance Dashbo
 app.include_router(fin_export_data.router, prefix="/api/v1", tags=["Finance Export"])
 app.include_router(fin_import_data.router, prefix="/api/v1", tags=["Finance Import"])
 app.include_router(fin_pmo_docs.router, prefix="/api/v1/pmo", tags=["Finance PMO Docs"])
+app.include_router(fin_private_equity.router, prefix="/api/v1/finance", tags=["Private Equity"])
 
 # Finance Doc Processor Routers
 app.include_router(fin_sow_api.router, prefix="/api/v1/finance")
