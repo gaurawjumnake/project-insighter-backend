@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from uuid import UUID
+from typing import Optional, Any, Dict
 from datetime import datetime
 
 class AccountDashboardBase(BaseModel):
@@ -70,4 +71,6 @@ class AccountDashboardResponse(AccountDashboardBase):
     account_id: UUID
     created_at: datetime
     updated_at: datetime
+    overall_insights: Optional[Dict[str, Any]] = None
+    overall_insights_generated_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)

@@ -13,6 +13,7 @@ class AccountBase(BaseModel):
     target_revenue: Optional[float] = 0.0
     forecast_revenue: Optional[float] = 0.0
     shortfall: Optional[float] = 0.0
+    private_equity_id: Optional[UUID] = Field(None, description="Foreign key linking to Private Equity firm.")
 
 class AccountCreate(AccountBase):
     pass
@@ -26,6 +27,7 @@ class AccountUpdate(BaseModel):
     target_revenue: Optional[float] = None
     forecast_revenue: Optional[float] = None
     shortfall: Optional[float] = None
+    private_equity_id: Optional[UUID] = None
 
 class DeliveryUnitOut(BaseModel):
     id: UUID
@@ -44,6 +46,7 @@ class AccountOut(AccountBase):
     total_ai_hours: float
     active_project_count: int
     inactive_project_count: int
+    private_equity_id: Optional[UUID] = None
     projects: List[ProjectOut] = []
 
     @computed_field

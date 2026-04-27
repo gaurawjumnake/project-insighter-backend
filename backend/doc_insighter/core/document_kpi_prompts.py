@@ -63,3 +63,26 @@ class BestPractices:
         - Documentation Standards: Requirements for API docs (Swagger), Readmes, and architecture decision records (ADRs).
         - GAP ANALYSIS: Identify missing industry standards or areas where the process is manual/outdated.
     """
+
+class PrivateEquityDocs:
+    company_capabilities_prompt = """
+    Analyze the provided Company Capabilities document and extract key strategic insights:
+    - Core competencies and specialized service offerings
+    - Industry expertise and sector vertical strengths
+    - Technological capabilities and proprietary tools/frameworks
+    - Delivery model (onshore, offshore, hybrid) and scale
+    - Key case studies and proven success patterns
+    - Certifications, partnerships, and industry recognitions
+    - Talent pool composition and specialized skills
+    """
+    
+    pe_details_prompt = """
+    Analyze the provided Private Equity / Portfolio document and extract key investment insights:
+    - Investment thesis and strategic objectives for the portfolio
+    - Growth expectations and target exit timelines
+    - Specific value creation levers identified
+    - Portfolio company synergies and integration opportunities
+    - Financial performance targets and KPI expectations
+    - Operational improvement priorities
+    - Risk factors and mitigation strategies from the PE perspective
+    """

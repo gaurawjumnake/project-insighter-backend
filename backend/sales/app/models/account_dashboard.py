@@ -1,5 +1,6 @@
 from sqlalchemy import Column, String, Text, Boolean, DateTime, Integer, Float, text
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from backend.db.base import Base
 from datetime import datetime
@@ -61,6 +62,10 @@ class AccountDashboard(Base):
     growth_action_plan_30days_ready = Column(Boolean, default=False, nullable=True)
     account_research_link = Column(String, nullable=True) 
     
+     # AI Insights
+    overall_insights = Column(JSONB, nullable=True)
+    overall_insights_generated_at = Column(DateTime(timezone=True), nullable=True)
+
     # Timestamps (IST)
     created_at = Column(DateTime(timezone=True), default=get_ist_time, nullable=False)
     updated_at = Column(DateTime(timezone=True), default=get_ist_time, onupdate=get_ist_time, nullable=False)
