@@ -6,10 +6,14 @@ import threading
 
 
 class Logger:
+    _configured = False
+
     def __init__(self) -> None:
         self.log_buffer = deque(maxlen=1000) 
         self.buffer_lock = threading.Lock()
-        self.setup_logger()
+        if not Logger._configured:
+            self.setup_logger()
+            Logger._configured = True
 
     def custom_sink(self, message):
         """Custom sink to capture logs in buffer"""

@@ -11,6 +11,8 @@ from backend.finance.app.models.delivery_unit import DeliveryUnit
 from backend.finance.app.models.project import Project
 from backend.finance.app.models.revenue import RevenueMaster
 from backend.finance.app.models.document import ProjectDocument
+from backend.finance.app.models.private_equity import PrivateEquity
+from backend.finance.app.models.private_equity_document import PrivateEquityDocument
 
 # Export all models
 __all__ = [
@@ -19,5 +21,7 @@ __all__ = [
     "DeliveryUnit",
     "Project",
     "RevenueMaster",
-    "ProjectDocument"
+    "ProjectDocument",
+    "PrivateEquity",
+    "PrivateEquityDocument"
 ]

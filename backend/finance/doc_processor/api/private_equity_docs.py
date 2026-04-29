@@ -67,11 +67,11 @@ async def import_pe_document(
         )
 
     try:
-        def pe_wrapper(db, file_path, entity_id, dry_run):
+        def pe_wrapper(db, file_path, account_id, dry_run):
             return process_pe_document(
                 db=db,
                 file_path=file_path,
-                pe_id=entity_id,
+                pe_id=account_id,
                 document_type=document_type,
                 dry_run=dry_run
             )
