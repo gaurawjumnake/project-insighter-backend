@@ -47,14 +47,14 @@ def generate_data_s3_key(entity_id: str | UUID, entity_type: str) -> str:
     
     Args:
         entity_id: Account ID or Project ID
-        entity_type: 'account' or 'project'
+        entity_type: 'account', 'project', or 'private_equity'
     
     Returns:
-        S3 key in format: temp/account_<id>_<date>.json or temp/project_<id>_<date>.json
+        S3 key in format: temp/<entity_type>_<id>_<date>.json
     """
     entity_type = entity_type.lower()
-    if entity_type not in ['account', 'project']:
-        raise ValueError("entity_type must be 'account' or 'project'")
+    if entity_type not in ['account', 'project', 'private_equity']:
+        raise ValueError("entity_type must be 'account', 'project', or 'private_equity'")
     
     date_str = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{entity_type}_{str(entity_id)}_{date_str}.json"
@@ -73,7 +73,7 @@ def upload_data_to_s3(
     Args:
         data: Dictionary to upload as JSON
         entity_id: Account ID or Project ID
-        entity_type: 'account' or 'project'
+        entity_type: 'account', 'project', or 'private_equity'
         custom_key: Optional custom S3 key (generated if not provided)
     
     Returns:

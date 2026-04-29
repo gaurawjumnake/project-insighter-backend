@@ -13,7 +13,7 @@ from backend.sales.doc_processor.api import code_quality as code_quality_api
 from backend.sales.doc_processor.api import tech_review as tech_review_api
 from backend.sales.doc_processor.api import best_practices as best_practices_api
 from backend.sales.doc_processor.api import project_docs as project_docs_api
-from backend.sales.doc_processor.api import insights as insights_api
+from backend.sales.doc_processor.api import insights as sales_insights_api
 from backend.sales.app.api import account_dashboard, calendar_event, calendar_milestone, calendar_reminder
 
 # Finance imports
@@ -25,6 +25,7 @@ from backend.finance.app.api import export_data as fin_export_data
 from backend.finance.app.api import import_data as fin_import_data
 from backend.finance.app.api import pmo_docs as fin_pmo_docs
 from backend.finance.app.api import private_equity as fin_private_equity
+from backend.insights_workflow.api import insights as fin_insights
 from backend.finance.doc_processor.api import sow as fin_sow_api
 from backend.finance.doc_processor.api import wsr as fin_wsr_api
 from backend.finance.doc_processor.api import code_quality as fin_code_quality_api
@@ -32,8 +33,6 @@ from backend.finance.doc_processor.api import tech_review as fin_tech_review_api
 from backend.finance.doc_processor.api import best_practices as fin_best_practices_api
 from backend.finance.doc_processor.api import project_docs as fin_project_docs_api
 from backend.finance.doc_processor.api import private_equity_docs as pe_docs_api
-
-# from backend.insights_crew.api import generalized_analysis
 
 # Optional: Create tables automatically on startup (useful for dev)
 Base.metadata.create_all(bind=engine)
@@ -84,7 +83,7 @@ app.include_router(code_quality_api.router, prefix="/api/v1")
 app.include_router(tech_review_api.router, prefix="/api/v1")
 app.include_router(best_practices_api.router, prefix="/api/v1")
 app.include_router(project_docs_api.router, prefix="/api/v1")
-app.include_router(insights_api.router, prefix="/api/v1")
+app.include_router(sales_insights_api.router, prefix="/api/v1")
 
 # Finance App Routers
 app.include_router(fin_account.router, prefix="/api/v1", tags=["Finance Accounts"])
@@ -95,6 +94,7 @@ app.include_router(fin_export_data.router, prefix="/api/v1", tags=["Finance Expo
 app.include_router(fin_import_data.router, prefix="/api/v1", tags=["Finance Import"])
 app.include_router(fin_pmo_docs.router, prefix="/api/v1/pmo", tags=["Finance PMO Docs"])
 app.include_router(fin_private_equity.router, prefix="/api/v1/finance", tags=["Private Equity"])
+app.include_router(fin_insights.router, tags=["Finance Insights"])
 
 # Finance Doc Processor Routers
 app.include_router(fin_sow_api.router, prefix="/api/v1/finance")
@@ -104,12 +104,6 @@ app.include_router(fin_tech_review_api.router, prefix="/api/v1/finance")
 app.include_router(fin_best_practices_api.router, prefix="/api/v1/finance")
 app.include_router(fin_project_docs_api.router, prefix="/api/v1/finance")
 app.include_router(pe_docs_api.router, prefix="/api/v1/finance")
-
-# app.include_router(
-#     generalized_analysis.router,
-#     prefix="/api/v1/analysis",
-#     tags=["Generalized Analysis"]
-# )
 
 from mangum import Mangum
 handler = Mangum(app=app)
