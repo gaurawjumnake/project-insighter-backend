@@ -1,0 +1,547 @@
+{
+  "nodes": [
+    {
+      "id": "readme_ProjectInsighterBackend",
+      "label": "Project Insighter Backend",
+      "type": "entity",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "title"
+    },
+    {
+      "id": "readme_FastAPI",
+      "label": "FastAPI",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Tech Stack"
+    },
+    {
+      "id": "readme_AWSLambda",
+      "label": "AWS Lambda",
+      "type": "entity",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Architecture Overview"
+    },
+    {
+      "id": "readme_Docker",
+      "label": "Docker",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Deployment"
+    },
+    {
+      "id": "readme_PostgreSQL",
+      "label": "PostgreSQL (Supabase)",
+      "type": "entity",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Tech Stack"
+    },
+    {
+      "id": "readme_S3Bucket",
+      "label": "AWS S3 Storage",
+      "type": "entity",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "S3 Storage Layout"
+    },
+    {
+      "id": "readme_AzureOpenAI",
+      "label": "Azure OpenAI (GPT-4o)",
+      "type": "entity",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Tech Stack"
+    },
+    {
+      "id": "readme_CrewAI",
+      "label": "CrewAI",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Tech Stack"
+    },
+    {
+      "id": "readme_LlamaIndex",
+      "label": "LlamaIndex",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Tech Stack"
+    },
+    {
+      "id": "readme_LlamaParse",
+      "label": "LlamaParse",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Doc Insighter section"
+    },
+    {
+      "id": "readme_ECR",
+      "label": "AWS ECR",
+      "type": "entity",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Deployment"
+    },
+    {
+      "id": "readme_APIGateway",
+      "label": "AWS API Gateway",
+      "type": "entity",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Architecture Overview"
+    },
+    {
+      "id": "readme_CloudFront",
+      "label": "CloudFront",
+      "type": "entity",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Architecture Overview"
+    },
+    {
+      "id": "readme_Mangum",
+      "label": "Mangum",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Tech Stack"
+    },
+    {
+      "id": "readme_FinanceModule",
+      "label": "Finance Module",
+      "type": "entity",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Modules"
+    },
+    {
+      "id": "readme_SalesModule",
+      "label": "Sales Module",
+      "type": "entity",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Modules"
+    },
+    {
+      "id": "readme_DocInsighterModule",
+      "label": "Doc Insighter (Shared AI Engine)",
+      "type": "entity",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Modules"
+    },
+    {
+      "id": "readme_DocumentProcessor",
+      "label": "Document Processor",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Modules"
+    },
+    {
+      "id": "readme_SQLAlchemy",
+      "label": "SQLAlchemy ORM",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Tech Stack"
+    },
+    {
+      "id": "readme_Pydantic",
+      "label": "Pydantic",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Tech Stack"
+    },
+    {
+      "id": "readme_boto3",
+      "label": "boto3",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Tech Stack"
+    },
+    {
+      "id": "readme_Uvicorn",
+      "label": "Uvicorn",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Tech Stack"
+    },
+    {
+      "id": "readme_uv",
+      "label": "uv Package Manager",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Tech Stack"
+    },
+    {
+      "id": "readme_DocumentUploadWorkflow",
+      "label": "Document Upload to S3 Pipeline",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "S3 Storage Layout"
+    },
+    {
+      "id": "readme_KPIExtraction",
+      "label": "KPI Extraction from Documents",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Doc Insighter section"
+    },
+    {
+      "id": "readme_CircleAllocationInsights",
+      "label": "Circle/Team Allocation Insights",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Sales Modules - Insights"
+    },
+    {
+      "id": "readme_SOWDocumentType",
+      "label": "Statement of Work (SOW)",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "API Endpoints - document types"
+    },
+    {
+      "id": "readme_WSRDocumentType",
+      "label": "Weekly Status Report (WSR)",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "API Endpoints - document types"
+    },
+    {
+      "id": "readme_DatabaseSchema",
+      "label": "Shared PostgreSQL Schema",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Database section"
+    },
+    {
+      "id": "readme_FinanceDashboard",
+      "label": "Finance Dashboard",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Finance Modules"
+    },
+    {
+      "id": "readme_SalesDashboard",
+      "label": "Sales Account Dashboard",
+      "type": "concept",
+      "file_type": "document",
+      "source_file": "readme.md",
+      "source_location": "Sales Modules"
+    }
+  ],
+  "edges": [
+    {
+      "source": "readme_ProjectInsighterBackend",
+      "target": "readme_FastAPI",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_FastAPI",
+      "target": "readme_Uvicorn",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_ProjectInsighterBackend",
+      "target": "readme_AWSLambda",
+      "relation": "deployed_on",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_ProjectInsighterBackend",
+      "target": "readme_Docker",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_Docker",
+      "target": "readme_ECR",
+      "relation": "pushed_to",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_AWSLambda",
+      "target": "readme_APIGateway",
+      "relation": "connected_to",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_APIGateway",
+      "target": "readme_CloudFront",
+      "relation": "exposed_by",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_AWSLambda",
+      "target": "readme_Mangum",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_ProjectInsighterBackend",
+      "target": "readme_PostgreSQL",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_ProjectInsighterBackend",
+      "target": "readme_S3Bucket",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_ProjectInsighterBackend",
+      "target": "readme_AzureOpenAI",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_DocInsighterModule",
+      "target": "readme_CrewAI",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_DocInsighterModule",
+      "target": "readme_LlamaIndex",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_DocInsighterModule",
+      "target": "readme_LlamaParse",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_DocInsighterModule",
+      "target": "readme_AzureOpenAI",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_FinanceModule",
+      "target": "readme_DocInsighterModule",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_SalesModule",
+      "target": "readme_DocInsighterModule",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_FinanceModule",
+      "target": "readme_PostgreSQL",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_SalesModule",
+      "target": "readme_PostgreSQL",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_DocumentProcessor",
+      "target": "readme_S3Bucket",
+      "relation": "stores_files_to",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_DocumentUploadWorkflow",
+      "target": "readme_DocumentProcessor",
+      "relation": "feeds_into",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_DocumentProcessor",
+      "target": "readme_DocInsighterModule",
+      "relation": "invokes",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_KPIExtraction",
+      "target": "readme_AzureOpenAI",
+      "relation": "powered_by",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_KPIExtraction",
+      "target": "readme_CrewAI",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_ProjectInsighterBackend",
+      "target": "readme_SQLAlchemy",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_ProjectInsighterBackend",
+      "target": "readme_Pydantic",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_ProjectInsighterBackend",
+      "target": "readme_boto3",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_ProjectInsighterBackend",
+      "target": "readme_uv",
+      "relation": "uses",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_FinanceModule",
+      "target": "readme_FinanceDashboard",
+      "relation": "provides",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_SalesModule",
+      "target": "readme_SalesDashboard",
+      "relation": "provides",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_SalesModule",
+      "target": "readme_CircleAllocationInsights",
+      "relation": "provides",
+      "type": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "readme_FinanceModule",
+      "target": "readme_DatabaseSchema",
+      "relation": "uses",
+      "type": "INFERRED",
+      "confidence_score": 0.85
+    },
+    {
+      "source": "readme_SalesModule",
+      "target": "readme_DatabaseSchema",
+      "relation": "uses",
+      "type": "INFERRED",
+      "confidence_score": 0.85
+    },
+    {
+      "source": "readme_LlamaParse",
+      "target": "readme_DocumentUploadWorkflow",
+      "relation": "processes_files_in",
+      "type": "INFERRED",
+      "confidence_score": 0.8
+    },
+    {
+      "source": "readme_CrewAI",
+      "target": "readme_KPIExtraction",
+      "relation": "powers",
+      "type": "INFERRED",
+      "confidence_score": 0.85
+    },
+    {
+      "source": "readme_CircleAllocationInsights",
+      "target": "readme_SOWDocumentType",
+      "relation": "analyzes",
+      "type": "INFERRED",
+      "confidence_score": 0.8
+    },
+    {
+      "source": "readme_CircleAllocationInsights",
+      "target": "readme_WSRDocumentType",
+      "relation": "analyzes",
+      "type": "INFERRED",
+      "confidence_score": 0.8
+    }
+  ],
+  "hyperedges": [
+    {
+      "label": "Document Processing Pipeline",
+      "nodes": [
+        "readme_DocumentUploadWorkflow",
+        "readme_DocumentProcessor",
+        "readme_DocInsighterModule",
+        "readme_S3Bucket"
+      ],
+      "description": "Flow from document upload through processing to storage and AI analysis"
+    },
+    {
+      "label": "AI-Powered Analysis Stack",
+      "nodes": [
+        "readme_AzureOpenAI",
+        "readme_CrewAI",
+        "readme_LlamaParse",
+        "readme_DocInsighterModule"
+      ],
+      "description": "Integrated AI services for document extraction, agent orchestration, and LLM inference"
+    },
+    {
+      "label": "Shared Data & Services",
+      "nodes": [
+        "readme_FinanceModule",
+        "readme_SalesModule",
+        "readme_DocInsighterModule",
+        "readme_PostgreSQL"
+      ],
+      "description": "Finance and Sales modules both depend on shared Doc Insighter engine and PostgreSQL database"
+    }
+  ],
+  "input_tokens": 2847,
+  "output_tokens": 0
+}

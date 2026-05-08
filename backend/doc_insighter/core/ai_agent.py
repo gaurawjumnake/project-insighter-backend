@@ -3,7 +3,7 @@ import pymupdf4llm
 import os
 from crewai import Agent, Task, Crew, Process
 from pathlib import Path
-from backend.doc_insighter.tools.llm_models import llm
+from backend.utitlites.llm_models import llm
 from backend.doc_insighter.tools.file_reader_tool import CustomFileReaderTool
 from pydantic import BaseModel
 from typing import Optional
@@ -95,7 +95,7 @@ class DataExtractor_1:
 
 import pymupdf4llm
 from crewai import Agent, Task, Crew, Process
-from backend.doc_insighter.tools.llm_models import llm
+from backend.utitlites.llm_models import llm
 from backend.doc_insighter.tools.file_reader_tool import CustomFileReaderTool
 from backend.doc_insighter.tools.app_logger import Logger
 from pydantic import BaseModel

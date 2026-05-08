@@ -14,7 +14,7 @@ The architecture is extensible and can be applied to other analytical tasks.
 """
 
 from crewai import Agent
-from backend.doc_insighter.tools.llm_models import llm
+from backend.utitlites.llm_models import llm
 from backend.doc_insighter.tools.app_logger import Logger
 from backend.insights_workflow.tools.s3_data_reader_tool import S3DataReaderTool
 
