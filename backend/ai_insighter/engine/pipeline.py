@@ -18,6 +18,7 @@ Interface:
     ) -> dict
 """
 import json
+from typing import Any
 import re
 from backend.utitlites.llm_models import llm
 from crewai import Agent, Crew, Task
@@ -59,13 +60,18 @@ class InsightsPipeline:
         data: dict,
         prompt_template: str,
         output_format: dict,
-    ) -> dict:
+        output_mode: str = "json"
+    ) -> Any:
         data_str = self._prepare_data(data)
         prompt   = prompt_template.replace("{data}", data_str)
 
         research_task      = self._research_task(prompt)
         analysis_task      = self._analysis_task(research_task)
-        summarization_task = self._summarization_task(output_format, analysis_task)
+
+        if output_mode == "markdown":
+            final_task = self._markdown_task(analysis_task)
+        else:
+            final_task = self._summarization_task(output_format, analysis_task)
 
         crew = Crew(
             agents=[
@@ -73,11 +79,15 @@ class InsightsPipeline:
                 self._analyzer(),
                 self._summarizer(),
             ],
-            tasks=[research_task, analysis_task, summarization_task],
+            tasks=[research_task, analysis_task, final_task],
             verbose=self.verbose,
         )
 
         result = crew.kickoff()
+
+        if output_mode == "markdown":
+            return str(result) 
+        
         return _extract_json(str(result))
 
     # - Data preparation ---------------------------------------------------------
@@ -93,12 +103,12 @@ class InsightsPipeline:
         if _count_tokens(raw) <= TOKEN_THRESHOLD:
             return raw
 
-        compressed = self.llm.invoke(
+        compressed = self.llm.invoke( #type: ignore
             "Compress the following JSON into a concise structured summary. "
             "Preserve all key metrics, numbers, dates, risks, and entity identifiers. "
             "Remove verbose text but keep every fact.\n\n"
             f"{raw}"
-        ).content
+        ).content 
 
         return compressed
 
@@ -137,7 +147,23 @@ class InsightsPipeline:
             verbose=self.verbose,
         )
 
-    def _summarizer(self) -> Agent:
+    def _summarizer(self, output_mode: str = "json") -> Agent:
+        if output_mode == "markdown":
+            return Agent(
+                role="Insights Synthesizer",
+                backstory=(
+                    "Expert at converting analytical findings into clean, "
+                    "structured markdown reports for business leadership."
+                ),
+                goal=(
+                    "Convert the analysis into a well-structured markdown report. "
+                    "Skip sections with no real signal. "
+                    "Return only the markdown — no preamble, no explanation."
+                ),
+                llm=self.llm,
+                verbose=self.verbose,
+            )
+ 
         return Agent(
             role="Insights Synthesizer",
             backstory=(
@@ -208,5 +234,20 @@ class InsightsPipeline:
             ),
             expected_output="A single valid JSON object matching the schema above.",
             agent=self._summarizer(),
+            context=[analysis_task],
+        )
+    
+    def _markdown_task(self, analysis_task: Task) -> Task:
+        return Task(
+            description=(
+                "Convert the analysis into a structured markdown report "
+                "following the output format in the original instructions.\n\n"
+                "Rules:\n"
+                "- Skip any section with no real signal\n"
+                "- Every insight must be specific and decision-relevant\n"
+                "- Return only the markdown — no preamble, no extra explanation"
+            ),
+            expected_output="A structured markdown report.",
+            agent=self._summarizer("markdown"),
             context=[analysis_task],
         )

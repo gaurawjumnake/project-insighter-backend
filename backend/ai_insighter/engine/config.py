@@ -43,8 +43,11 @@ PE_SCHEMA = {
     "leadership_pitch": []
 }
 
+ANY_DOCUMENT_SCHEMA = {"mode":"markdown"}
+
 SCHEMAS = {
     "project":        PROJECT_SCHEMA,
     "account":        ACCOUNT_SCHEMA,
     "private_equity": PE_SCHEMA,
+    "any_document":   ANY_DOCUMENT_SCHEMA
 }

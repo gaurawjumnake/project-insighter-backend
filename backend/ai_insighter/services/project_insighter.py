@@ -2,7 +2,7 @@ from backend.ai_insighter.engine.pipeline import InsightsPipeline
 from backend.ai_insighter.engine.config import SCHEMAS
 from backend.ai_insighter.services.prompts import PromptsTemplates
 
-pipeline = InsightsPipeline()
+pipeline = InsightsPipeline(True)
 
 def analyse(project_data: dict) -> dict:
     return pipeline.run(
@@ -11,8 +11,7 @@ def analyse(project_data: dict) -> dict:
         output_format   = SCHEMAS["project"],
     )
 
-
-# - DRY Run -------------------------------------------------------
+# # - DRY Run -------------------------------------------------------
 # if __name__ == "__main__":
 #     data = {
 #         "project_id":   "proj_123",
