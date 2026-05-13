@@ -25,7 +25,7 @@ def analyse(
     """
     pe_doc_str = (
         json.dumps(pe_research_document, default=str)
-        if isinstance(pe_research_document, dict)
+        if not isinstance(pe_research_document, str)
         else pe_research_document
     )
 
@@ -40,7 +40,7 @@ def analyse(
     return pipeline.run(
         data            = company_capabilities,
         prompt_template = prompt_template,
-        output_format   = SCHEMAS["pe"],
+        output_format   = SCHEMAS["private_equity"],
     )
 
 

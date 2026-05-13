@@ -298,7 +298,17 @@ def generate_pe_insights(
         ]
 
         company_capabilities = dict(getattr(pe, 'company_capabilities', None) or {})
-        pe_research_document = pe.documents or {}
+        
+        # Convert documents relationship (InstrumentedList) to serializable format
+        pe_documents_list = getattr(pe, 'documents', [])
+        pe_research_document = (
+            [
+                {k: v for k, v in doc.__dict__.items() if not k.startswith('_')}
+                for doc in pe_documents_list
+            ]
+            if pe_documents_list
+            else {}
+        )
 
         insights = PEService(
             company_capabilities = company_capabilities,

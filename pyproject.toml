@@ -10,7 +10,6 @@ dependencies = [
     "crewai[azure-ai-inference]>=1.6.1",
     "dotenv>=0.9.9",
     "fastapi>=0.128.1",
-    "graphifyy>=0.7.8",
     "httpx>=0.28.1",
     "langchain-text-splitters>=1.1.1",
     "llama-parse>=0.6.94",
