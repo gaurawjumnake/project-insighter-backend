@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from uuid import UUID
 
-from backend.finance.app.schemas.account import AccountCreate, AccountOut, AccountUpdate, AccountCreateResponse
+from backend.finance.app.schemas.account import AccountCreate, AccountOut, AccountUpdate, AccountCreateResponse, AccountIsSalesToggle
 from backend.finance.app.services import account as account_service
 from backend.db.session import get_db
 from backend.finance.app.services.account import refresh_account_metrics
@@ -74,6 +74,36 @@ def update_existing_account(
     if db_account is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Account not found")
     return db_account
+
+# ----------------- 4.5. PATCH: Toggle is_sales Status -----------------
+@router.patch("/{account_id}/toggle-is-sales", response_model=AccountOut)
+def toggle_is_sales_status(
+    account_id: UUID,
+    toggle_data: AccountIsSalesToggle,
+    db: Session = Depends(get_db)
+):
+    """
+    Toggle the is_sales status for an account.
+    When is_sales is set to True, a new entry is created in the account_dashboard table
+    with the account_id and account_name from the accounts table.
+    """
+    try:
+        updated_account = account_service.toggle_is_sales_status(
+            db, 
+            account_id=account_id, 
+            is_sales=toggle_data.is_sales
+        )
+        if updated_account is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, 
+                detail="Account not found"
+            )
+        return updated_account
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error toggling is_sales status: {str(e)}"
+        )
 
 # ----------------- 5. DELETE: Delete Account -----------------
 @router.delete("/{account_id}", status_code=status.HTTP_200_OK)
