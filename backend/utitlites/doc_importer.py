@@ -200,7 +200,7 @@ async def import_and_save_document(
     if import_function:
         try:
 
-            summary = import_function(db=db, file_path=temp_file_path, account_id=account_id, dry_run=dry_run)
+            summary = await import_function(db=db, file_path=temp_file_path, account_id=account_id, dry_run=dry_run)
             
             has_errors = summary.get("errors") and len(summary["errors"]) > 0
             import_successful = not has_errors and not dry_run

@@ -289,6 +289,7 @@ def toggle_is_sales_status(db: Session, account_id: UUID, is_sales: bool) -> Opt
     """
     Toggle the is_sales status of an account.
     If is_sales is True, create a new entry in account_dashboard table.
+    If is_sales is False, only update the flag (does NOT delete from account_dashboard).
     
     Args:
         db: Database session
@@ -328,12 +329,7 @@ def toggle_is_sales_status(db: Session, account_id: UUID, is_sales: bool) -> Opt
                 log.log_info(f"Created AccountDashboard entry for account: {db_account.name}")
             else:
                 log.log_info(f"AccountDashboard entry already exists for account: {db_account.name}")
-        else:
-            db.query(AccountDashboard).filter(
-                AccountDashboard.account_id == account_id
-            ).delete(synchronize_session=False)
-            db.commit()
-            log.log_info(f"AccountDashboard entry removed as is_sales is false.")
+        
         log.log_info(f"Toggled is_sales status for account {db_account.name}: {is_sales}")
         return get_account(db, account_id)
         
