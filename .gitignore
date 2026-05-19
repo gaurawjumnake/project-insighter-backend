@@ -7,6 +7,9 @@ wheels/
 *.egg-info
 .env
 app.log
+.frontend
+.test
+.github
 
 # Virtual environments
 .venv

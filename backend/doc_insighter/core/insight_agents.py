@@ -3,7 +3,7 @@ import re
 import json
 from crewai import Agent, Task, Crew, Process, LLM
 from backend.doc_insighter.tools.llama_tool import LlamaParseTool
-from backend.doc_insighter.tools.llm_models import llm
+from backend.utitlites.llm_models import llm
 from dotenv import load_dotenv
 
 load_dotenv()

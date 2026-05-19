@@ -1,0 +1,41 @@
+import uuid
+from sqlalchemy import Column, String, Float, ForeignKey, Text, DateTime, Integer
+from sqlalchemy.orm import relationship
+from datetime import datetime
+from sqlalchemy.dialects.postgresql import UUID, JSONB
+from backend.db.base import Base
+
+class Project(Base):
+    __tablename__ = "projects"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String, nullable=False)
+    account_id = Column(UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=False)
+    delivery_unit_id = Column(UUID(as_uuid=True), ForeignKey("delivery_units.id"), nullable=False)
+    overview = Column(Text)
+    status = Column(String, default="active")
+    # ai_direct_people = Column(Integer, default=0)
+    ai_direct_hours = Column(Float, default=0.0)
+    ai_assist_hours = Column(Float, default=0.0)
+    tech_stack = Column(JSONB)
+    ai_recommendations = Column(Text)
+    ai_recommendations_generated_at = Column(DateTime)
+    project_type = Column(String)
+    from_date = Column(DateTime)
+    to_date = Column(DateTime)
+    proposal_end_date = Column(DateTime)
+    expected_win_date = Column(DateTime)
+    expected_outcome = Column(Text)
+    technical_roadmap = Column(Text)
+    product_roadmap = Column(Text)
+    code_coverage_pct = Column(Float, default=0.0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    overall_insights = Column(JSONB, nullable=True)
+    overall_insights_generated_at = Column(DateTime, nullable=True)
+    
+    
+    # Relationships
+    account = relationship("Account", back_populates="projects")
+    revenues = relationship("RevenueMaster", back_populates="project", cascade="all, delete-orphan")
+    delivery_unit = relationship("DeliveryUnit", back_populates="projects", )
+    project_documents = relationship("ProjectDocument", back_populates="project")

@@ -3,7 +3,8 @@ import pymupdf4llm
 import os
 from crewai import Agent, Task, Crew, Process
 from pathlib import Path
-from backend.doc_insighter.tools.llm_models import llm
+from backend.utitlites.llm_models import llm
+from backend.doc_insighter.tools.file_reader_tool import CustomFileReaderTool
 from pydantic import BaseModel
 from typing import Optional
 from dotenv import load_dotenv
@@ -23,9 +24,11 @@ class PDFToMarkdown_1:
         log.log_info(f"Converting pdf file:{pdf_path}")
         return pymupdf4llm.to_markdown(pdf_path)
 
+class DataExtractor_1:
     def __init__(self, verbose: bool = True) -> None:
         self.verbose = verbose
         self.converter = PDFToMarkdown_1()
+        self.file_reader_tool = CustomFileReaderTool()
 
     def summarizer_assistant(self, requirements: str, input_text: str, output_schema: Optional[ResponseModel] = None):
         summary_agent = Agent(
@@ -35,6 +38,7 @@ class PDFToMarkdown_1:
             You are an experienced project manager who has a very good understanding of documents used for IT related projects.
             You know how to precisely analyze Markdown text to generate responses which satisfy user requirements.""",
             llm=llm,
+            tools=[self.file_reader_tool],
             verbose=self.verbose
         )
             
@@ -91,7 +95,8 @@ class PDFToMarkdown_1:
 
 import pymupdf4llm
 from crewai import Agent, Task, Crew, Process
-from backend.doc_insighter.tools.llm_models import llm
+from backend.utitlites.llm_models import llm
+from backend.doc_insighter.tools.file_reader_tool import CustomFileReaderTool
 from backend.doc_insighter.tools.app_logger import Logger
 from pydantic import BaseModel
 from typing import Optional, Any, Dict, List
@@ -109,6 +114,7 @@ class DataExtractor:
     def __init__(self, verbose: bool = True) -> None:
         self.verbose = verbose
         self.converter = PDFToMarkdown()
+        self.file_reader_tool = CustomFileReaderTool()
 
     def _create_agent(self) -> Agent:
         """Create the document analyzer agent"""
@@ -119,6 +125,7 @@ class DataExtractor:
             (SOW, WSR, technical reviews, Jira reports, test reports, SQL query results).
             You excel at parsing Markdown text content and extracting relevant information in strict JSON format.""",
             llm=llm,
+            tools=[self.file_reader_tool],
             verbose=self.verbose
         )
 
@@ -136,6 +143,7 @@ class DataExtractor:
             2. Focus on information relevant to user requirements
             3. Extract key insights in strictly structured JSON format
             4. Do not include random thoughts, only output the JSON.
+            5. Handle project documents: SOW, WSR, technical reviews, Jira reports, test reports, SQL results
             """,
             expected_output="Key insights in JSON format matching user requirements",
             output_json=output_schema, #type:ignore
