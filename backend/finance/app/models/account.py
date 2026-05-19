@@ -44,6 +44,7 @@ class Account(Base):
     shortfall = Column(Float, nullable=True, default=0.0)
     account_insights = Column(JSONB, nullable=True)
     account_insights_generated_at = Column(DateTime, nullable=True)
+    is_sales = Column(Boolean, default=False, nullable=False, index=True)
 
     projects = relationship("Project", back_populates="account")
 

@@ -25,10 +25,11 @@ from backend.finance.app.api import export_data as fin_export_data
 from backend.finance.app.api import import_data as fin_import_data
 from backend.finance.app.api import pmo_docs as fin_pmo_docs
 from backend.finance.app.api import private_equity as fin_private_equity
-from backend.finance.app.api import health as fin_health
+# from backend.finance.app.api import health as fin_health
 
 # from backend.insights_workflow.api import insights as fin_insights
 from backend.ai_insighter.api import insighter_api as ai_insights
+from backend.ai_insighter.api import any_doc_insighter_api as any_docs_api
 
 from backend.finance.doc_processor.api import sow as fin_sow_api
 from backend.finance.doc_processor.api import wsr as fin_wsr_api
@@ -98,9 +99,10 @@ app.include_router(fin_export_data.router, prefix="/api/v1", tags=["Finance Expo
 app.include_router(fin_import_data.router, prefix="/api/v1", tags=["Finance Import"])
 app.include_router(fin_pmo_docs.router, prefix="/api/v1/pmo", tags=["Finance PMO Docs"])
 app.include_router(fin_private_equity.router, prefix="/api/v1/finance", tags=["Private Equity"])
-app.include_router(fin_health.router, prefix="/api/v1", tags=["Health Check"])
+# app.include_router(fin_health.router, prefix="/api/v1", tags=["Health Check"])
 
 app.include_router(ai_insights.router, tags=["AI Insights"])
+app.include_router(any_docs_api.router, tags=["Any Docs"])
 
 # Finance Doc Processor Routers
 app.include_router(fin_sow_api.router, prefix="/api/v1/finance")

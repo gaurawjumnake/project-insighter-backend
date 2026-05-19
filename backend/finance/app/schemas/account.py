@@ -14,6 +14,7 @@ class AccountBase(BaseModel):
     forecast_revenue: Optional[float] = 0.0
     shortfall: Optional[float] = 0.0
     private_equity_id: Optional[UUID] = Field(None, description="Foreign key linking to Private Equity firm.")
+    is_sales: bool = Field(False, description="Flag to indicate if this account is a sales account.")
 
 class AccountCreate(AccountBase):
     pass
@@ -28,6 +29,7 @@ class AccountUpdate(BaseModel):
     forecast_revenue: Optional[float] = None
     shortfall: Optional[float] = None
     private_equity_id: Optional[UUID] = None
+    is_sales: Optional[bool] = None
 
 class DeliveryUnitOut(BaseModel):
     id: UUID
@@ -68,6 +70,11 @@ class AccountCreateResponse(AccountBase):
 
     class Config:
         from_attributes = True
+
+
+class AccountIsSalesToggle(BaseModel):
+    """Schema for toggling is_sales status."""
+    is_sales: bool = Field(..., description="Flag to indicate if this is a sales account.")
 
 
 class AccountRevenueSummary(BaseModel):

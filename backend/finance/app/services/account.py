@@ -11,6 +11,7 @@ from backend.finance.app.models.delivery_unit import DeliveryUnit
 from backend.finance.app.models.project import Project
 from backend.finance.app.models.revenue import RevenueMaster
 from backend.finance.app.schemas.account import AccountCreate, AccountUpdate, AccountRevenueSummary
+from backend.sales.app.models.account_dashboard import AccountDashboard
 from backend.doc_insighter.tools.app_logger import Logger
 log = Logger()
 
@@ -283,6 +284,59 @@ def delete_account(db: Session, account_id: UUID) -> bool:
         log.log_warning(f"Failed to refresh materialized view after deletion: {e}")
     
     return True
+
+def toggle_is_sales_status(db: Session, account_id: UUID, is_sales: bool) -> Optional[Account]:
+    """
+    Toggle the is_sales status of an account.
+    If is_sales is True, create a new entry in account_dashboard table.
+    If is_sales is False, only update the flag (does NOT delete from account_dashboard).
+    
+    Args:
+        db: Database session
+        account_id: UUID of the account
+        is_sales: Boolean flag to toggle
+        
+    Returns:
+        Updated Account object or None if account not found
+    """
+    db_account = db.query(Account).filter(Account.id == account_id).first()
+    if not db_account:
+        log.log_warning(f"Account not found for toggle is_sales: {account_id}")
+        return None
+    
+    try:
+        # Update is_sales flag on the account
+        db_account.is_sales = is_sales
+        db.commit()
+        db.refresh(db_account)
+        
+        # If is_sales is True, create an entry in account_dashboard
+        if is_sales:
+            # Check if account_dashboard entry already exists
+            existing_dashboard = db.query(AccountDashboard).filter(
+                AccountDashboard.account_id == account_id
+            ).first()
+            
+            if not existing_dashboard:
+                # Create new AccountDashboard entry
+                dashboard_entry = AccountDashboard(
+                    account_id=account_id,
+                    account_name=db_account.name
+                )
+                db.add(dashboard_entry)
+                db.commit()
+                db.refresh(dashboard_entry)
+                log.log_info(f"Created AccountDashboard entry for account: {db_account.name}")
+            else:
+                log.log_info(f"AccountDashboard entry already exists for account: {db_account.name}")
+        
+        log.log_info(f"Toggled is_sales status for account {db_account.name}: {is_sales}")
+        return get_account(db, account_id)
+        
+    except Exception as e:
+        db.rollback()
+        log.log_error(f"Error toggling is_sales status: {e}")
+        raise
 
 def refresh_account_metrics(db: Session) -> dict:
     try:
