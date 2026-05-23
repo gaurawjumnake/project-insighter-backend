@@ -33,6 +33,7 @@ def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) -> Lis
             A.forecast_revenue,
             A.shortfall,
             A.private_equity_id,
+            A.is_sales.label("is_sales"),
             D.id.label("du_id"),
             D.name.label("du_name"),
             D.created_at.label("du_created_at"),
@@ -53,6 +54,7 @@ def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) -> Lis
             A.id, A.name, A.customer_overview, A.delivery_unit_id,
             A.ai_recommendations, A.created_at, A.account_manager,
             A.target_revenue, A.forecast_revenue, A.shortfall, A.private_equity_id,
+            A.is_sales,
             D.id, D.name, D.created_at
         )
         .order_by(
@@ -77,6 +79,7 @@ def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) -> Lis
             target_revenue=row.target_revenue,
             forecast_revenue=row.forecast_revenue,
             private_equity_id=row.private_equity_id,
+            is_sales=row.is_sales,
             shortfall=safe_float(row.target_revenue) - safe_float(row.current_revenue) - safe_float(row.forecast_revenue)
         )
         if row.du_id:

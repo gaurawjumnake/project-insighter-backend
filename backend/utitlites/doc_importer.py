@@ -12,6 +12,7 @@ from backend.utitlites.s3_storage import upload_to_s3, get_s3_key
 from datetime import datetime
 from dotenv import load_dotenv
 from pathlib import Path
+import inspect
 load_dotenv()
 
 
@@ -83,7 +84,8 @@ async def import_and_save_file(
     
     if import_function:
         try:
-            summary = import_function(db, contents, file.filename, dry_run)
+            import_result = import_function(db, contents, file.filename, dry_run)
+            summary = await import_result if inspect.isawaitable(import_result) else import_result
             
             has_errors = summary.get("errors") and len(summary["errors"]) > 0
             import_successful = not has_errors and not dry_run
@@ -200,7 +202,13 @@ async def import_and_save_document(
     if import_function:
         try:
 
-            summary = await import_function(db=db, file_path=temp_file_path, account_id=account_id, dry_run=dry_run)
+            import_result = import_function(
+                db=db,
+                file_path=temp_file_path,
+                account_id=account_id,
+                dry_run=dry_run,
+            )
+            summary = await import_result if inspect.isawaitable(import_result) else import_result
             
             has_errors = summary.get("errors") and len(summary["errors"]) > 0
             import_successful = not has_errors and not dry_run

@@ -48,6 +48,17 @@ def _extract_json(text: str) -> dict:
         return {"raw_output": text}
 
 
+def _extract_text_from_llm_response(response: Any) -> str:
+    """Normalize different LLM response shapes into plain text."""
+    if response is None:
+        return ""
+    if hasattr(response, "content"):
+        return str(response.content)
+    if hasattr(response, "raw"):
+        return str(response.raw)
+    return str(response)
+
+
 class InsightsPipeline:
 
     def __init__(self, verbose: bool = False):
@@ -103,14 +114,29 @@ class InsightsPipeline:
         if _count_tokens(raw) <= TOKEN_THRESHOLD:
             return raw
 
-        compressed = self.llm.invoke( #type: ignore
+        compression_prompt = (
             "Compress the following JSON into a concise structured summary. "
             "Preserve all key metrics, numbers, dates, risks, and entity identifiers. "
             "Remove verbose text but keep every fact.\n\n"
             f"{raw}"
-        ).content 
+        )
 
-        return compressed
+        try:
+            # CrewAI LLM wrappers differ by provider/version.
+            if hasattr(self.llm, "invoke"):
+                response = self.llm.invoke(compression_prompt)  # type: ignore[attr-defined]
+            elif hasattr(self.llm, "call"):
+                response = self.llm.call(compression_prompt)  # type: ignore[attr-defined]
+            elif hasattr(self.llm, "complete"):
+                response = self.llm.complete(compression_prompt)  # type: ignore[attr-defined]
+            else:
+                return raw
+
+            compressed = _extract_text_from_llm_response(response).strip()
+            return compressed or raw
+        except Exception:
+            # Never fail the whole flow on optional compression.
+            return raw
 
     # - Agents -------------------------------------------------------------
 

@@ -12,6 +12,7 @@ from backend.sales.doc_processor.api import wsr as wsr_api
 from backend.sales.doc_processor.api import code_quality as code_quality_api
 from backend.sales.doc_processor.api import tech_review as tech_review_api
 from backend.sales.doc_processor.api import best_practices as best_practices_api
+from backend.sales.doc_processor.api import other_docs as other_docs_api
 from backend.sales.doc_processor.api import project_docs as project_docs_api
 from backend.sales.doc_processor.api import insights as sales_insights_api
 from backend.sales.app.api import account_dashboard, calendar_event, calendar_milestone, calendar_reminder
@@ -36,6 +37,7 @@ from backend.finance.doc_processor.api import wsr as fin_wsr_api
 from backend.finance.doc_processor.api import code_quality as fin_code_quality_api
 from backend.finance.doc_processor.api import tech_review as fin_tech_review_api
 from backend.finance.doc_processor.api import best_practices as fin_best_practices_api
+from backend.finance.doc_processor.api import other_docs as fin_other_docs_api
 from backend.finance.doc_processor.api import project_docs as fin_project_docs_api
 from backend.finance.doc_processor.api import private_equity_docs as pe_docs_api
 
@@ -87,6 +89,7 @@ app.include_router(wsr_api.router,  prefix="/api/v1")
 app.include_router(code_quality_api.router, prefix="/api/v1")
 app.include_router(tech_review_api.router, prefix="/api/v1")
 app.include_router(best_practices_api.router, prefix="/api/v1")
+app.include_router(other_docs_api.router, prefix="/api/v1")
 app.include_router(project_docs_api.router, prefix="/api/v1")
 app.include_router(sales_insights_api.router, prefix="/api/v1")
 
@@ -110,6 +113,7 @@ app.include_router(fin_wsr_api.router, prefix="/api/v1/finance")
 app.include_router(fin_code_quality_api.router, prefix="/api/v1/finance")
 app.include_router(fin_tech_review_api.router, prefix="/api/v1/finance")
 app.include_router(fin_best_practices_api.router, prefix="/api/v1/finance")
+app.include_router(fin_other_docs_api.router, prefix="/api/v1/finance")
 app.include_router(fin_project_docs_api.router, prefix="/api/v1/finance")
 app.include_router(pe_docs_api.router, prefix="/api/v1/finance")
 

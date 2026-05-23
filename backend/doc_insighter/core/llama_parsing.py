@@ -100,11 +100,19 @@ class LlamaCloudDocumentParser:
         try:
             log.log_info(f"Starting to parse: {file_path}")
             
-            # documents = self.parser.load_data(file_path)
             import concurrent.futures
+            import asyncio
+
+            def run_in_thread():
+                new_loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(new_loop)
+                try:
+                    return new_loop.run_until_complete(self.parser.aload_data(file_path))
+                finally:
+                    new_loop.close()
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                documents = list(executor.submit(self.parser.load_data, file_path).result())
+                documents = list(executor.submit(run_in_thread).result())
             
             if not documents:
                 log.log_error(f"No content extracted from: {file_path}")
