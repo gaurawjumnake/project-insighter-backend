@@ -25,7 +25,7 @@ def analyse(
     """
     pe_doc_str = (
         json.dumps(pe_research_document, default=str)
-        if not isinstance(pe_research_document, str)
+        if isinstance(pe_research_document, dict)
         else pe_research_document
     )
 

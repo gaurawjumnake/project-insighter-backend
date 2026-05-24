@@ -131,7 +131,7 @@ async def generate_document_insights(
       4. Persist to document_insights table
     """
     _validate_entity_type(entity_type)
-    _validate_uuid(entity_id, "entity_id")
+    entity_uuid = _validate_uuid(entity_id, "entity_id")
     _validate_file(file)
 
     log.log_info(
@@ -144,7 +144,7 @@ async def generate_document_insights(
         # Returns parsed text via the process_function pattern
         parse_result = await import_and_save_document(
             file=file,
-            account_id=None,  # type:ignore      
+            account_id=entity_uuid,
             temp_dir=TEMP_DIR,
             success_dir=TEMP_DIR,
             failed_dir=TEMP_DIR,
