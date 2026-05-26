@@ -9,6 +9,7 @@ from backend.db.session import get_db
 from backend.utitlites.doc_importer import import_and_save_document
 from backend.sales.doc_processor.services.other_docs import process_other_docs_document, get_account_document
 from backend.sales.app.models.account_dashboard import AccountDashboard
+from backend.finance.app.models.account import Account
 from backend.doc_insighter.tools.app_logger import Logger
 log = Logger()
 from dotenv import load_dotenv
@@ -57,15 +58,33 @@ async def import_other_docs_document(
         raise HTTPException(status_code=400, detail="account_id is required")
 
     try:
-        account_exists = (
+        account = (
+            db.query(Account.id, Account.name)
+            .filter(Account.id == account_id)
+            .first()
+        )
+        if not account:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Account {account_id} not found in accounts."
+            )
+
+        account_dashboard = (
             db.query(AccountDashboard.account_id)
             .filter(AccountDashboard.account_id == account_id)
             .first()
         )
-        if not account_exists:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Account {account_id} not found in account_dashboard."
+        if not account_dashboard:
+            # Keep upload available for all accounts while current document FK
+            # still references account_dashboard.account_id.
+            dashboard_entry = AccountDashboard(
+                account_id=account_id,
+                account_name=account.name,
+            )
+            db.add(dashboard_entry)
+            db.commit()
+            log.log_info(
+                f"Created account_dashboard entry for non-sales account document upload: {account_id}"
             )
 
         result = await import_and_save_document(

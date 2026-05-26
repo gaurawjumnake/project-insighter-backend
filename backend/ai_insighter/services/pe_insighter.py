@@ -2,14 +2,14 @@ import json
 from backend.ai_insighter.engine.pipeline import InsightsPipeline
 from backend.ai_insighter.engine.config import SCHEMAS
 from backend.ai_insighter.services.prompts import PromptsTemplates
-from typing import Any, Optional
+from typing import Any
 
 pipeline = InsightsPipeline()
 
 def analyse(
     company_capabilities: dict,
     account_insights: list,
-    pe_research_document: dict | str,
+    pe_research_document: Any,
 ) -> dict:
     """
     Args:
@@ -23,10 +23,12 @@ def analyse(
     Returns:
         Structured PE insight dict matching PE_SCHEMA.
     """
+    # Ensure prompt substitution always receives a string.
+    # PE research documents may arrive as dict, list, SQLAlchemy objects, or plain text.
     pe_doc_str = (
-        json.dumps(pe_research_document, default=str)
-        if isinstance(pe_research_document, dict)
-        else pe_research_document
+        pe_research_document
+        if isinstance(pe_research_document, str)
+        else json.dumps(pe_research_document, default=str)
     )
 
     insights_str = json.dumps(account_insights, indent=2, default=str)
