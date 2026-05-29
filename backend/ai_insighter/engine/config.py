@@ -220,7 +220,50 @@ ACCOUNT_SCHEMA = {
       "maturity": "leading | stable | developing | weak"
     }
   ],
-
+  "transformation_proof_points": [
+    {
+      "proof_point_title": "string",
+      "business_problem": "string",
+      "source_projects": ["string"],
+      "transformation_approach": "string",
+      "capabilities_used": ["string"],
+      "measurable_operational_outcomes": ["string"],
+      "measurable_business_outcomes": ["string"],
+      "stakeholder_relevance": ["CTO | CIO | COO | Delivery Leadership | Transformation Office"],
+      "portability_to_other_accounts": "low | medium | high",
+      "proof_strength": "weak | moderate | strong"
+    }
+  ],
+  "account_archetype": {
+    "primary": "transformation_leader | operationally_mature | governance_constrained | modernization_heavy | ai_emerging | delivery_risk_concentrated | innovation_focused | fragmented_engineering",
+    "secondary": ["string"],
+    "rationale": "string"
+  },
+  "buying_signal_analysis": {
+    "overall_signal_strength": "weak | emerging | active | urgent",
+    "signals": [
+      {
+        "signal": "modernization_pressure | operational_scalability_challenges | governance_instability | ai_adoption_mandate | cloud_migration_activity | delivery_instability | technical_debt_accumulation | automation_gap | cost_optimization_pressure | engineering_productivity_issue",
+        "strength": "weak | emerging | active | urgent",
+        "supporting_projects": ["string"],
+        "business_driver": "string"
+      }
+    ],
+    "expansion_potential": "low | medium | high",
+    "additional_transformation_investment_likelihood": "low | medium | high",
+    "strategic_account_growth_opportunity": "low | medium | high"
+  },
+  "transformation_readiness": {
+    "classification": "ready | partially_ready | high_resistance_risk",
+    "leadership_alignment": "strong | moderate | weak",
+    "governance_maturity": "strong | moderate | weak",
+    "operational_discipline": "strong | moderate | weak",
+    "engineering_maturity": "strong | moderate | weak",
+    "delivery_consistency": "strong | moderate | weak",
+    "ai_readiness": "strong | moderate | weak",
+    "modernization_readiness": "strong | moderate | weak",
+    "rationale": "string"
+  },
   "cross_project_replication_opportunities": [
     {
       "source_project": "string",
@@ -474,9 +517,191 @@ PE_SCHEMA = {
 
 ANY_DOCUMENT_SCHEMA = {"mode":"markdown"}
 
+# Account layered schemas
+ACCOUNT_OPERATIONAL_SCHEMA = {
+  "overall_health": ACCOUNT_SCHEMA["overall_health"],
+  "portfolio_operational_analysis": ACCOUNT_SCHEMA["portfolio_operational_analysis"],
+  "financial_analysis": ACCOUNT_SCHEMA["financial_analysis"],
+  "ai_maturity_analysis": ACCOUNT_SCHEMA["ai_maturity_analysis"],
+}
+
+ACCOUNT_CAPABILITY_PROOF_SCHEMA = {
+  "account_capability_profile": ACCOUNT_SCHEMA["account_capability_profile"],
+  "transformation_proof_points": ACCOUNT_SCHEMA["transformation_proof_points"],
+}
+
+ACCOUNT_STRATEGIC_COMMERCIAL_SCHEMA = {
+  "account_archetype": ACCOUNT_SCHEMA["account_archetype"],
+  "buying_signal_analysis": ACCOUNT_SCHEMA["buying_signal_analysis"],
+  "transformation_readiness": ACCOUNT_SCHEMA["transformation_readiness"],
+}
+
+ACCOUNT_EXECUTIVE_SYNTHESIS_SCHEMA = {
+  "cross_project_replication_opportunities": ACCOUNT_SCHEMA["cross_project_replication_opportunities"],
+  "cross_project_failure_patterns": ACCOUNT_SCHEMA["cross_project_failure_patterns"],
+  "transformation_opportunities": ACCOUNT_SCHEMA["transformation_opportunities"],
+  "commercial_growth_opportunities": ACCOUNT_SCHEMA["commercial_growth_opportunities"],
+  "strategic_positioning_signals": ACCOUNT_SCHEMA["strategic_positioning_signals"],
+  "executive_recommendations": ACCOUNT_SCHEMA["executive_recommendations"],
+}
+
+# Extended PE strategy schemas (service-only, no DB persistence required)
+PE_PORTFOLIO_SCHEMA = PE_SCHEMA
+
+PE_PROOF_POINT_SCHEMA = {
+  "proof_points": [
+    {
+      "proof_point_id": "string",
+      "source_account": "string",
+      "industry": "string",
+      "business_problem": "string",
+      "transformation_approach": "string",
+      "capabilities_used": ["string"],
+      "technologies_used": ["string"],
+      "delivery_model": "string",
+      "timeline": "string",
+      "business_outcomes": ["string"],
+      "operational_outcomes": ["string"],
+      "financial_outcomes": ["string"],
+      "stakeholder_type": ["string"],
+      "reusability": "low | medium | high",
+      "ideal_target_profile": ["string"],
+      "proof_strength": "low | medium | high"
+    }
+  ]
+}
+
+PE_BUYING_SIGNAL_SCHEMA = {
+  "buying_signals": [
+    {
+      "signal": "string",
+      "affected_accounts": ["string"],
+      "urgency": "low | medium | high",
+      "confidence": "low | medium | high",
+      "evidence": "string",
+      "recommended_motion": "string"
+    }
+  ]
+}
+
+PE_WHITESPACE_SCHEMA = {
+  "client_accounts_analysis": {
+    "expansion_opportunities": [
+      {
+        "account_name": "string",
+        "industry": "string",
+        "expansion_theme": "string",
+        "deeper_transformation_potential": "string",
+        "risk_signals": ["string"],
+        "recommended_next_step": "string"
+      }
+    ]
+  },
+  "non_client_portfolio_expansion_intelligence": {
+    "targets": [
+      {
+        "target_company": "string",
+        "industry": "string",
+        "why_this_company_is_targetable": "string",
+        "pain_points": ["string"],
+        "capability_alignment": ["string"],
+        "best_proof_point_to_use": {
+          "source_client_account": "string",
+          "proof_point_title": "string",
+          "why_relevant": "string"
+        },
+        "gap_to_outcome_chain": {
+          "gap": "string",
+          "capability": "string",
+          "proof_point": "string",
+          "entry_strategy": "string",
+          "expected_business_outcome": "string"
+        },
+        "opportunity_priority": "low | medium | high",
+        "buying_signal_strength": "low | medium | high",
+        "transformation_urgency": "low | medium | high",
+        "likely_executive_buyers": ["string"],
+        "commercial_confidence": "low | medium | high"
+      }
+    ]
+  },
+  "portfolio_wide_program_opportunities": [
+    {
+      "program_theme": "string",
+      "repeatable_problem": "string",
+      "affected_accounts": ["string"],
+      "recommended_portfolio_program": "string",
+      "expected_portfolio_outcome": "string",
+      "priority": "high | medium | low"
+    }
+  ],
+  "target_prioritization": {
+    "highest_probability_targets": ["string"],
+    "highest_urgency_targets": ["string"],
+    "easiest_expansion_targets": ["string"],
+    "tier_1_immediate_pursuit": ["string"],
+    "tier_2_strategic_expansion": ["string"],
+    "tier_3_long_term_watchlist": ["string"]
+  },
+  "whitespace_opportunities": [
+    {
+      "target_company": "string",
+      "opportunity_priority": "low | medium | high",
+      "buying_signal_strength": "low | medium | high",
+      "transformation_urgency": "low | medium | high",
+      "likely_business_problem": "string",
+      "recommended_capabilities": ["string"],
+      "recommended_proof_points": ["string"],
+      "recommended_entry_strategy": "string",
+      "land_and_expand_strategy": "string",
+      "likely_executive_buyers": ["string"],
+      "expected_business_outcomes": ["string"],
+      "relationship_leverage": "string",
+      "commercial_confidence": "low | medium | high"
+    }
+  ]
+}
+
+PE_EXECUTIVE_STRATEGY_SCHEMA = {
+  "portfolio_themes": [
+    {
+      "theme": "string",
+      "evidence_accounts": ["string"],
+      "business_impact": "string"
+    }
+  ],
+  "tier_1_immediate_targets": ["string"],
+  "tier_2_strategic_expansion": ["string"],
+  "tier_3_watchlist": ["string"],
+  "executive_narratives": [
+    {
+      "narrative": "string",
+      "audience": "PE leadership | portfolio CTO | portfolio CEO",
+      "expected_outcome": "string"
+    }
+  ],
+  "leadership_recommendations": [
+    {
+      "priority": "high | medium | low",
+      "recommendation": "string",
+      "rationale": "string",
+      "expected_business_outcome": "string"
+    }
+  ]
+}
+
 SCHEMAS = {
     "project":        PROJECT_SCHEMA,
     "account":        ACCOUNT_SCHEMA,
+    "account_operational": ACCOUNT_OPERATIONAL_SCHEMA,
+    "account_capability_proof": ACCOUNT_CAPABILITY_PROOF_SCHEMA,
+    "account_strategic_commercial": ACCOUNT_STRATEGIC_COMMERCIAL_SCHEMA,
+    "account_executive_synthesis": ACCOUNT_EXECUTIVE_SYNTHESIS_SCHEMA,
     "private_equity": PE_SCHEMA,
-    "any_document":   ANY_DOCUMENT_SCHEMA
+    "any_document":   ANY_DOCUMENT_SCHEMA,
+    "pe_portfolio": PE_PORTFOLIO_SCHEMA,
+    "pe_proof_point": PE_PROOF_POINT_SCHEMA,
+    "pe_buying_signal": PE_BUYING_SIGNAL_SCHEMA,
+    "pe_whitespace": PE_WHITESPACE_SCHEMA,
+    "pe_executive_strategy": PE_EXECUTIVE_STRATEGY_SCHEMA,
 }

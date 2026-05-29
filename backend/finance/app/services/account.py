@@ -24,6 +24,7 @@ def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) -> Lis
         db.query(
             A.id.label("account_id"),
             A.name.label("account_name"),
+            A.industry,
             A.customer_overview,
             A.delivery_unit_id,
             A.ai_recommendations,
@@ -34,6 +35,7 @@ def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) -> Lis
             A.shortfall,
             A.private_equity_id,
             A.is_sales.label("is_sales"),
+            A.is_client.label("is_client"),
             D.id.label("du_id"),
             D.name.label("du_name"),
             D.created_at.label("du_created_at"),
@@ -51,10 +53,10 @@ def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) -> Lis
         .outerjoin(P, A.id == P.account_id)
         .outerjoin(R, P.id == R.project_id)
         .group_by(
-            A.id, A.name, A.customer_overview, A.delivery_unit_id,
+            A.id, A.name, A.industry, A.customer_overview, A.delivery_unit_id,
             A.ai_recommendations, A.created_at, A.account_manager,
             A.target_revenue, A.forecast_revenue, A.shortfall, A.private_equity_id,
-            A.is_sales,
+            A.is_sales, A.is_client,
             D.id, D.name, D.created_at
         )
         .order_by(
@@ -71,6 +73,7 @@ def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) -> Lis
         account = Account(
             id=row.account_id,
             name=row.account_name,
+            industry=row.industry,
             customer_overview=row.customer_overview,
             delivery_unit_id=row.delivery_unit_id,
             ai_recommendations=row.ai_recommendations,
@@ -80,6 +83,7 @@ def get_accounts(db: Session, skip: int = 0, limit: Optional[int] = None) -> Lis
             forecast_revenue=row.forecast_revenue,
             private_equity_id=row.private_equity_id,
             is_sales=row.is_sales,
+            is_client=row.is_client,
             shortfall=safe_float(row.target_revenue) - safe_float(row.current_revenue) - safe_float(row.forecast_revenue)
         )
         if row.du_id:

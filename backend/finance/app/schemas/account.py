@@ -6,6 +6,7 @@ from ..schemas.project import ProjectOut
 
 class AccountBase(BaseModel):
     name: str = Field(..., description="The client account name.")
+    industry: Optional[str] = None
     delivery_unit_id: UUID = Field(..., description="Foreign key linking to the Delivery Unit.")
     account_manager: Optional[str] = None
     customer_overview: Optional[str] = None
@@ -15,12 +16,14 @@ class AccountBase(BaseModel):
     shortfall: Optional[float] = 0.0
     private_equity_id: Optional[UUID] = Field(None, description="Foreign key linking to Private Equity firm.")
     is_sales: bool = Field(False, description="Flag to indicate if this account is a sales account.")
+    is_client: bool = Field(False, description="Flag to indicate if this account is a client account.")
 
 class AccountCreate(AccountBase):
     pass
 
 class AccountUpdate(BaseModel):
     name: Optional[str] = None
+    industry: Optional[str] = None
     delivery_unit_id: Optional[UUID] = None
     account_manager: Optional[str] = None
     customer_overview: Optional[str] = None
@@ -30,6 +33,7 @@ class AccountUpdate(BaseModel):
     shortfall: Optional[float] = None
     private_equity_id: Optional[UUID] = None
     is_sales: Optional[bool] = None
+    is_client: Optional[bool] = None
 
 class DeliveryUnitOut(BaseModel):
     id: UUID

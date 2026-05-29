@@ -1,10 +1,180 @@
 import json
+from typing import Any
+
 from backend.ai_insighter.engine.pipeline import InsightsPipeline
 from backend.ai_insighter.engine.config import SCHEMAS
 from backend.ai_insighter.services.prompts import PromptsTemplates
-from typing import Any
 
 pipeline = InsightsPipeline()
+
+
+def _to_str(value: Any) -> str:
+    return value if isinstance(value, str) else json.dumps(value, indent=2, default=str)
+
+
+def _schema(schema_key: str) -> dict:
+    schema = SCHEMAS.get(schema_key)
+    if schema is None:
+        raise ValueError(
+            f"Schema '{schema_key}' not found in SCHEMAS. "
+            "Please add it in backend/ai_insighter/engine/config.py."
+        )
+    return schema
+
+
+def _run_prompt(
+    company_capabilities: dict,
+    prompt_template: str,
+    schema_key: str,
+) -> dict:
+    return pipeline.run(
+        data=company_capabilities,
+        prompt_template=prompt_template,
+        output_format=_schema(schema_key),
+    )
+
+
+def analyse_portfolio_intelligence(
+    company_capabilities: dict,
+    account_insights: list,
+    pe_research_document: Any,
+) -> dict:
+    prompt_template = PromptsTemplates.PE_PORTFOLIO_PROMPT.replace(
+        "{pe_research_document}", _to_str(pe_research_document)
+    ).replace(
+        "{account_insights_list}", _to_str(account_insights)
+    )
+
+    return _run_prompt(
+        company_capabilities=company_capabilities,
+        prompt_template=prompt_template,
+        schema_key="pe_portfolio",
+    )
+
+
+def extract_proof_points(
+    company_capabilities: dict,
+    account_insights: list,
+    pe_research_document: Any,
+) -> dict:
+    prompt_template = PromptsTemplates.PE_PROOF_POINT_PROMPT.replace(
+        "{pe_research_document}", _to_str(pe_research_document)
+    ).replace(
+        "{account_insights_list}", _to_str(account_insights)
+    )
+
+    return _run_prompt(
+        company_capabilities=company_capabilities,
+        prompt_template=prompt_template,
+        schema_key="pe_proof_point",
+    )
+
+
+def detect_buying_signals(
+    company_capabilities: dict,
+    account_insights: list,
+    pe_research_document: Any,
+) -> dict:
+    prompt_template = PromptsTemplates.PE_BUYING_SIGNAL_PROMPT.replace(
+        "{pe_research_document}", _to_str(pe_research_document)
+    ).replace(
+        "{account_insights_list}", _to_str(account_insights)
+    )
+
+    return _run_prompt(
+        company_capabilities=company_capabilities,
+        prompt_template=prompt_template,
+        schema_key="pe_buying_signal",
+    )
+
+
+def generate_whitespace_opportunities(
+    company_capabilities: dict,
+    portfolio_insights: dict,
+    proof_points: dict,
+    buying_signals: dict,
+) -> dict:
+    prompt_template = PromptsTemplates.PE_WHITESPACE_PROMPT.replace(
+        "{portfolio_insights}", _to_str(portfolio_insights)
+    ).replace(
+        "{proof_points}", _to_str(proof_points)
+    ).replace(
+        "{buying_signals}", _to_str(buying_signals)
+    )
+
+    return _run_prompt(
+        company_capabilities=company_capabilities,
+        prompt_template=prompt_template,
+        schema_key="pe_whitespace",
+    )
+
+
+def generate_executive_strategy(
+    company_capabilities: dict,
+    portfolio_insights: dict,
+    whitespace_opportunities: dict,
+    proof_points: dict,
+    buying_signals: dict,
+) -> dict:
+    prompt_template = PromptsTemplates.PE_EXECUTIVE_STRATEGY_PROMPT.replace(
+        "{portfolio_insights}", _to_str(portfolio_insights)
+    ).replace(
+        "{whitespace_opportunities}", _to_str(whitespace_opportunities)
+    ).replace(
+        "{proof_points}", _to_str(proof_points)
+    ).replace(
+        "{buying_signals}", _to_str(buying_signals)
+    )
+
+    return _run_prompt(
+        company_capabilities=company_capabilities,
+        prompt_template=prompt_template,
+        schema_key="pe_executive_strategy",
+    )
+
+
+def run_full_pe_strategy(
+    company_capabilities: dict,
+    account_insights: list,
+    pe_research_document: Any,
+) -> dict:
+    portfolio_insights = analyse_portfolio_intelligence(
+        company_capabilities=company_capabilities,
+        account_insights=account_insights,
+        pe_research_document=pe_research_document,
+    )
+    proof_points = extract_proof_points(
+        company_capabilities=company_capabilities,
+        account_insights=account_insights,
+        pe_research_document=pe_research_document,
+    )
+    buying_signals = detect_buying_signals(
+        company_capabilities=company_capabilities,
+        account_insights=account_insights,
+        pe_research_document=pe_research_document,
+    )
+    whitespace_opportunities = generate_whitespace_opportunities(
+        company_capabilities=company_capabilities,
+        portfolio_insights=portfolio_insights,
+        proof_points=proof_points,
+        buying_signals=buying_signals,
+    )
+    executive_strategy = generate_executive_strategy(
+        company_capabilities=company_capabilities,
+        portfolio_insights=portfolio_insights,
+        whitespace_opportunities=whitespace_opportunities,
+        proof_points=proof_points,
+        buying_signals=buying_signals,
+    )
+
+    return {
+        "portfolio_insights": portfolio_insights,
+        "proof_points": proof_points,
+        "buying_signals": buying_signals,
+        "whitespace_opportunities": whitespace_opportunities,
+        "executive_strategy": executive_strategy,
+    }
+
 
 def analyse(
     company_capabilities: dict,
@@ -12,111 +182,17 @@ def analyse(
     pe_research_document: Any,
 ) -> dict:
     """
-    Args:
-        company_capabilities:  Your company's capability dict — this is
-                                the compressible payload (can be large).
-        account_insights:      List of pre-generated account insight dicts
-                                pulled from Supabase.
-        pe_research_document:  PE overview — investment thesis, sector
-                                focus, financial priorities. Dict or string.
-
-    Returns:
-        Structured PE insight dict matching PE_SCHEMA.
+    Backward-compatible PE analysis wrapper.
+    Uses the original prompt/schema for existing callers.
     """
-    # Ensure prompt substitution always receives a string.
-    # PE research documents may arrive as dict, list, SQLAlchemy objects, or plain text.
-    pe_doc_str = (
-        pe_research_document
-        if isinstance(pe_research_document, str)
-        else json.dumps(pe_research_document, default=str)
-    )
-
-    insights_str = json.dumps(account_insights, indent=2, default=str)
-
     prompt_template = PromptsTemplates.PE_PROMPT.replace(
-        "{pe_research_document}", pe_doc_str
+        "{pe_research_document}", _to_str(pe_research_document)
     ).replace(
-        "{account_insights_list}", insights_str
-    )
-    
-    return pipeline.run(
-        data            = company_capabilities,
-        prompt_template = prompt_template,
-        output_format   = SCHEMAS["private_equity"],
+        "{account_insights_list}", _to_str(account_insights)
     )
 
-
-# # - Dry Run ----------------------------------------------------------
-# if __name__ == "__main__":
-#     company_capabilities = {
-#         "technical_strengths": [
-#             "Cloud-native architecture", "Microservices", "DevSecOps"
-#         ],
-#         "ai_capabilities": [
-#             "LLM integration", "MLOps pipelines", "AI-assisted QA"
-#         ],
-#         "delivery_strengths": [
-#             "Agile delivery", "Nearshore teams", "Platform engineering"
-#         ],
-#         "domain_expertise": [
-#             "Financial services", "Healthcare", "Retail"
-#         ],
-#         "qa_practice": "Automated testing frameworks, coverage enforcement, shift-left QA"
-#     }
-
-#     pe_research_document = {
-#         "pe_name":          "Apex Capital Partners",
-#         "investment_thesis": "Technology-led transformation of mid-market B2B companies",
-#         "sector_focus":     ["FinTech", "HealthTech", "EnterpriseOps"],
-#         "growth_strategy":  "AI adoption, platform modernisation, scalable delivery",
-#         "financial_priorities": "EBITDA improvement, revenue growth 20% YoY",
-#         "technology_direction": "Cloud migration, AI integration, legacy decommission"
-#     }
-
-#     # Pre-generated account insights pulled from Supabase
-#     account_insights = [
-#         {
-#             "account_id":           "acct_456",
-#             "account_name":         "Acme Corp",
-#             "overall_health_score": 65,
-#             "summary":              "Two high-risk projects, infra blockers recurring.",
-#             "ai_insights":          ["Low AI adoption across most projects"],
-#             "financial_insights":   ["Revenue shortfall of 14% vs expected"],
-#             "risks": [
-#                 {"type": "delivery", "severity": "high",
-#                  "message": "Infra access blocking multiple projects"}
-#             ],
-#         },
-#         {
-#             "account_id":           "acct_789",
-#             "account_name":         "BetaCo",
-#             "overall_health_score": 72,
-#             "summary":              "Stable delivery but low AI ROI.",
-#             "ai_insights":          ["High AI hours but no measurable revenue impact"],
-#             "financial_insights":   ["On-target revenue, margin thinning"],
-#             "risks": [
-#                 {"type": "ai", "severity": "medium",
-#                  "message": "AI investment not translating to outcomes"}
-#             ],
-#         },
-#         {
-#             "account_id":           "acct_101",
-#             "account_name":         "GammaTech",
-#             "overall_health_score": 48,
-#             "summary":              "Critical delivery risk, legacy stack blocking modernisation.",
-#             "ai_insights":          ["No AI adoption"],
-#             "financial_insights":   ["Significant shortfall, cost overruns"],
-#             "risks": [
-#                 {"type": "execution", "severity": "high",
-#                  "message": "Legacy stack causing repeated delivery failures"}
-#             ],
-#         },
-#     ]
-
-#     result = analyse(
-#         company_capabilities  = company_capabilities,
-#         account_insights      = account_insights,
-#         pe_research_document  = pe_research_document,
-#     )
-
-#     print(json.dumps(result, indent=2))
+    return _run_prompt(
+        company_capabilities=company_capabilities,
+        prompt_template=prompt_template,
+        schema_key="private_equity",
+    )
