@@ -29,6 +29,7 @@ class Account(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, server_default=text("gen_random_uuid()"))
     name = Column(String, index=True, nullable=False)
+    industry = Column(String, nullable=True, index=True)
     customer_overview = Column(String, nullable=True)
     delivery_unit_id = Column(UUID(as_uuid=True), ForeignKey("delivery_units.id"), nullable=False)
     private_equity_id = Column(UUID(as_uuid=True), ForeignKey("private_equity.id"), nullable=True)
@@ -45,6 +46,7 @@ class Account(Base):
     account_insights = Column(JSONB, nullable=True)
     account_insights_generated_at = Column(DateTime, nullable=True)
     is_sales = Column(Boolean, default=False, nullable=False, index=True)
+    is_client = Column(Boolean, default=False, nullable=False, index=True)
 
     projects = relationship("Project", back_populates="account")
 

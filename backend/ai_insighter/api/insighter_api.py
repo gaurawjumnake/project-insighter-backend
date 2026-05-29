@@ -26,6 +26,14 @@ from backend.utitlites.llm_models import llm
 from backend.ai_insighter.services.project_insighter import analyse as ProjectService
 from backend.ai_insighter.services.accounts_insighter import analyse as AccountService
 from backend.ai_insighter.services.pe_insighter import analyse as PEService
+from backend.ai_insighter.services.pe_insighter import (
+    analyse_portfolio_intelligence as PEPortfolioService,
+    extract_proof_points as PEProofPointService,
+    detect_buying_signals as PEBuyingSignalService,
+    generate_whitespace_opportunities as PEWhitespaceService,
+    generate_executive_strategy as PEExecutiveStrategyService,
+    run_full_pe_strategy as PEFullStrategyService,
+)
 
 log = Logger()
 
@@ -66,6 +74,31 @@ def _validate_uuid(raw_id: str, label: str) -> UUID:
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _build_pe_inputs(pe: PrivateEquity) -> tuple[list[dict[str, Any]], dict[str, Any], Any]:
+    account_insights = [
+        {
+            "account_id":   str(a.id),
+            "account_name": a.name,
+            "is_client":    bool(getattr(a, "is_client", False)),
+            "industry":     getattr(a, "industry", None),
+            "insight":      a.account_insights,
+        }
+        for a in pe.accounts
+        if a.account_insights is not None
+    ]
+    company_capabilities = dict(getattr(pe, 'company_capabilities', None) or {})
+    pe_documents_list = getattr(pe, 'documents', [])
+    pe_research_document = (
+        [
+            {k: v for k, v in doc.__dict__.items() if not k.startswith('_')}
+            for doc in pe_documents_list
+        ]
+        if pe_documents_list
+        else {}
+    )
+    return account_insights, company_capabilities, pe_research_document
 
 
 # # - Project endpoints --------------------------------------------
@@ -286,40 +319,21 @@ def generate_pe_insights(
     log.log_info(f"Generating insights for PE: {pe_id} ({pe.name})")
 
     try:
-        # Pull pre-generated account insights
-        account_insights = [
-            {
-                "account_id":   str(a.id),
-                "account_name": a.name,
-                "insight":      a.account_insights,
-            }
-            for a in pe.accounts
-            if a.account_insights is not None
-        ]
+        account_insights, company_capabilities, pe_research_document = _build_pe_inputs(pe)
 
-        company_capabilities = dict(getattr(pe, 'company_capabilities', None) or {})
-        
-        # Convert documents relationship (InstrumentedList) to serializable format
-        pe_documents_list = getattr(pe, 'documents', [])
-        pe_research_document = (
-            [
-                {k: v for k, v in doc.__dict__.items() if not k.startswith('_')}
-                for doc in pe_documents_list
-            ]
-            if pe_documents_list
-            else {}
-        )
-
-        insights = PEService(
-            company_capabilities = company_capabilities,
-            account_insights     = account_insights,
-            pe_research_document = pe_research_document,
+        insights = PEFullStrategyService(
+            company_capabilities,
+            account_insights,
+            pe_research_document
         )
 
         # Persist
         pe.pe_insights = insights  # type: ignore
-        pe.pe_insights_generated_at = datetime.now(timezone.utc)  # type: ignore
+        pe.pe_insights_generated_at = datetime.now(timezone.utc)
+        log.log_info("About to commit")
+        # type: ignore
         db.commit()
+        log.log_info("Commit successful")
 
         return InsightGenerationResponse(
             status="success",
@@ -362,3 +376,139 @@ def retrieve_pe_insights(
         ),
         has_insights=pe.pe_insights is not None,
     )
+
+
+# @router.post("/pe/{pe_id}/portfolio-intelligence", response_model=InsightGenerationResponse, status_code=status.HTTP_202_ACCEPTED)
+# def generate_pe_portfolio_intelligence(pe_id: str, db: Session = Depends(get_db)) -> InsightGenerationResponse:
+#     _validate_uuid(pe_id, "PE ID")
+#     pe = db.query(PrivateEquity).filter(PrivateEquity.id == pe_id).first()
+#     if not pe:
+#         raise HTTPException(status_code=404, detail=f"PE entity not found: {pe_id}")
+#     try:
+#         account_insights, company_capabilities, pe_research_document = _build_pe_inputs(pe)
+#         insights = PEPortfolioService(company_capabilities, account_insights, pe_research_document)
+#         return InsightGenerationResponse(
+#             status="success",
+#             entity_type="private_equity_portfolio",
+#             entity_id=pe_id,
+#             entity_name=str(pe.name) if pe.name is not None else None,
+#             insights=insights,
+#             generated_at=_now(),
+#         )
+#     except Exception as e:
+#         log.log_error(f"Error generating PE portfolio intelligence: {e}")
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+# @router.post("/pe/{pe_id}/proof-points", response_model=InsightGenerationResponse, status_code=status.HTTP_202_ACCEPTED)
+# def generate_pe_proof_points(pe_id: str, db: Session = Depends(get_db)) -> InsightGenerationResponse:
+#     _validate_uuid(pe_id, "PE ID")
+#     pe = db.query(PrivateEquity).filter(PrivateEquity.id == pe_id).first()
+#     if not pe:
+#         raise HTTPException(status_code=404, detail=f"PE entity not found: {pe_id}")
+#     try:
+#         account_insights, company_capabilities, pe_research_document = _build_pe_inputs(pe)
+#         insights = PEProofPointService(company_capabilities, account_insights, pe_research_document)
+#         return InsightGenerationResponse(
+#             status="success",
+#             entity_type="private_equity_proof_points",
+#             entity_id=pe_id,
+#             entity_name=str(pe.name) if pe.name is not None else None,
+#             insights=insights,
+#             generated_at=_now(),
+#         )
+#     except Exception as e:
+#         log.log_error(f"Error generating PE proof points: {e}")
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+# @router.post("/pe/{pe_id}/buying-signals", response_model=InsightGenerationResponse, status_code=status.HTTP_202_ACCEPTED)
+# def generate_pe_buying_signals(pe_id: str, db: Session = Depends(get_db)) -> InsightGenerationResponse:
+#     _validate_uuid(pe_id, "PE ID")
+#     pe = db.query(PrivateEquity).filter(PrivateEquity.id == pe_id).first()
+#     if not pe:
+#         raise HTTPException(status_code=404, detail=f"PE entity not found: {pe_id}")
+#     try:
+#         account_insights, company_capabilities, pe_research_document = _build_pe_inputs(pe)
+#         insights = PEBuyingSignalService(company_capabilities, account_insights, pe_research_document)
+#         return InsightGenerationResponse(
+#             status="success",
+#             entity_type="private_equity_buying_signals",
+#             entity_id=pe_id,
+#             entity_name=str(pe.name) if pe.name is not None else None,
+#             insights=insights,
+#             generated_at=_now(),
+#         )
+#     except Exception as e:
+#         log.log_error(f"Error generating PE buying signals: {e}")
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+# @router.post("/pe/{pe_id}/whitespace-opportunities", response_model=InsightGenerationResponse, status_code=status.HTTP_202_ACCEPTED)
+# def generate_pe_whitespace_opportunities(pe_id: str, db: Session = Depends(get_db)) -> InsightGenerationResponse:
+#     _validate_uuid(pe_id, "PE ID")
+#     pe = db.query(PrivateEquity).filter(PrivateEquity.id == pe_id).first()
+#     if not pe:
+#         raise HTTPException(status_code=404, detail=f"PE entity not found: {pe_id}")
+#     try:
+#         account_insights, company_capabilities, pe_research_document = _build_pe_inputs(pe)
+#         portfolio_insights = PEPortfolioService(company_capabilities, account_insights, pe_research_document)
+#         proof_points = PEProofPointService(company_capabilities, account_insights, pe_research_document)
+#         buying_signals = PEBuyingSignalService(company_capabilities, account_insights, pe_research_document)
+#         insights = PEWhitespaceService(company_capabilities, portfolio_insights, proof_points, buying_signals)
+#         return InsightGenerationResponse(
+#             status="success",
+#             entity_type="private_equity_whitespace",
+#             entity_id=pe_id,
+#             entity_name=str(pe.name) if pe.name is not None else None,
+#             insights=insights,
+#             generated_at=_now(),
+#         )
+#     except Exception as e:
+#         log.log_error(f"Error generating PE whitespace opportunities: {e}")
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+# @router.post("/pe/{pe_id}/executive-strategy", response_model=InsightGenerationResponse, status_code=status.HTTP_202_ACCEPTED)
+# def generate_pe_executive_strategy(pe_id: str, db: Session = Depends(get_db)) -> InsightGenerationResponse:
+#     _validate_uuid(pe_id, "PE ID")
+#     pe = db.query(PrivateEquity).filter(PrivateEquity.id == pe_id).first()
+#     if not pe:
+#         raise HTTPException(status_code=404, detail=f"PE entity not found: {pe_id}")
+#     try:
+#         account_insights, company_capabilities, pe_research_document = _build_pe_inputs(pe)
+#         full_output = PEFullStrategyService(company_capabilities, account_insights, pe_research_document)
+#         return InsightGenerationResponse(
+#             status="success",
+#             entity_type="private_equity_executive_strategy",
+#             entity_id=pe_id,
+#             entity_name=str(pe.name) if pe.name is not None else None,
+#             insights=full_output,
+#             generated_at=_now(),
+#         )
+#     except Exception as e:
+#         log.log_error(f"Error generating PE executive strategy: {e}")
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+# @router.post("/pe/{pe_id}/full-strategy", response_model=InsightGenerationResponse, status_code=status.HTTP_202_ACCEPTED)
+# def generate_pe_full_strategy(pe_id: str, db: Session = Depends(get_db)) -> InsightGenerationResponse:
+#     _validate_uuid(pe_id, "PE ID")
+#     pe = db.query(PrivateEquity).filter(PrivateEquity.id == pe_id).first()
+#     if not pe:
+#         raise HTTPException(status_code=404, detail=f"PE entity not found: {pe_id}")
+
+#     try:
+#         account_insights, company_capabilities, pe_research_document = _build_pe_inputs(pe)
+#         insights = PEFullStrategyService(company_capabilities, account_insights, pe_research_document)
+#         return InsightGenerationResponse(
+#             status="success",
+#             entity_type="private_equity_full_strategy",
+#             entity_id=pe_id,
+#             entity_name=str(pe.name) if pe.name is not None else None,
+#             insights=insights,
+#             generated_at=_now(),
+#         )
+#     except Exception as e:
+#         log.log_error(f"Error generating PE full strategy: {e}")
+#         raise HTTPException(status_code=500, detail=str(e))
