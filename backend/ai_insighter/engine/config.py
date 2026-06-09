@@ -546,9 +546,272 @@ ACCOUNT_EXECUTIVE_SYNTHESIS_SCHEMA = {
 }
 
 # Extended PE strategy schemas (service-only, no DB persistence required)
-PE_PORTFOLIO_SCHEMA = PE_SCHEMA
+PE_RESEARCH_INTELLIGENCE_SCHEMA = {
+  "executive_summary": {
+    "investment_thesis": "string",
+    "transformation_focus": "string",
+    "growth_focus": "string",
+    "key_business_pressure": "string"
+  },
+  "strategic_priorities": [
+    {
+      "title": "string",
+      "description": "string",
+      "importance": "string"
+    }
+  ],
+  "investment_themes": [
+    {
+      "theme": "string",
+      "description": "string"
+    }
+  ],
+  "growth_signals": [
+    {
+      "title": "string",
+      "description": "string",
+      "evidence": "string"
+    }
+  ],
+  "transformation_signals": [
+    {
+      "title": "string",
+      "description": "string",
+      "evidence": "string"
+    }
+  ],
+  "business_pressures": [
+    {
+      "title": "string",
+      "description": "string",
+      "impact": "string"
+    }
+  ],
+  "portfolio_hypotheses": [
+    {
+      "hypothesis": "string",
+      "supporting_evidence": "string",
+      "confidence": "string"
+    }
+  ]
+}
+
+PE_PORTFOLIO_SCHEMA = {
+  "pe_name": "string",
+  "portfolio_summary": {
+    "portfolio_health": "healthy | stable | at_risk | fragmented",
+    "transformation_maturity": "leading | stable | developing | weak",
+    "summary": "string"
+  },
+  "portfolio_operational_analysis": {
+    "portfolio_patterns": [
+      {
+        "pattern": "string",
+        "affected_accounts": ["string"],
+        "severity": "low | medium | high",
+        "business_impact": "string"
+      }
+    ],
+    "portfolio_contradictions": [
+      {
+        "contradiction": "string",
+        "affected_accounts": ["string"],
+        "impact": "string"
+      }
+    ]
+  },
+  "pe_strategy_alignment": {
+    "aligned_areas": ["string"],
+    "misaligned_areas": [
+      {
+        "strategy_goal": "string",
+        "portfolio_gap": "string",
+        "affected_accounts": ["string"]
+      }
+    ]
+  },
+  "portfolio_capability_profile": [
+    {
+      "capability": "string",
+      "supporting_accounts": ["string"],
+      "business_value": "string",
+      "maturity": "leading | stable | developing | weak",
+      "portfolio_scalability": "low | medium | high"
+    }
+  ],
+  "replicable_success_models": [
+    {
+      "source_account": "string",
+      "target_accounts": ["string"],
+      "success_pattern": "string",
+      "business_outcome": "string",
+      "replicability": "low | medium | high"
+    }
+  ],
+  "portfolio_failure_patterns": [
+    {
+      "pattern": "string",
+      "affected_accounts": ["string"],
+      "business_impact": "string"
+    }
+  ],
+  "portfolio_standardisation_opportunities": [
+    {
+      "opportunity": "string",
+      "affected_accounts": ["string"],
+      "standardization_area": "string",
+      "expected_business_outcome": "string",
+      "priority": "high | medium | low"
+    }
+  ],
+  "investment_risk_signals": [
+    {
+      "risk": "string",
+      "affected_accounts": ["string"],
+      "risk_level": "low | medium | high",
+      "business_impact": "string"
+    }
+  ],
+  "portfolio_gap_analysis": [
+    {
+      "gap": "string",
+      "affected_accounts": ["string"],
+      "severity": "low | medium | high",
+      "business_impact": "string"
+    }
+  ],
+  "capability_to_opportunity_mapping": [
+    {
+      "gap": "string",
+      "company_capability": "string",
+      "transformation_approach": "string",
+      "expected_business_outcome": "string"
+    }
+  ],
+  "portfolio_transformation_themes": [
+    {
+      "theme": "string",
+      "supporting_accounts": ["string"],
+      "business_value": "string"
+    }
+  ],
+  "strategic_positioning_signals": [
+    {
+      "theme": "string",
+      "message": "string",
+      "proof_accounts": ["string"]
+    }
+  ],
+  "executive_transformation_narratives": [
+    {
+      "narrative": "string",
+      "target_audience": "PE leadership | portfolio CTO | portfolio CEO",
+      "business_outcome": "string"
+    }
+  ],
+  "leadership_pitches": [
+    {
+      "priority": "high | medium | low",
+      "source_account": "string",
+      "target_accounts": ["string"],
+      "pitch": "string",
+      "proof_point": "string",
+      "expected_business_outcome": "string"
+    }
+  ],
+  "strategic_recommendations": [
+    {
+      "priority": "high | medium | low",
+      "recommendation": "string",
+      "rationale": "string",
+      "expected_business_outcome": "string"
+    }
+  ],
+  # --- Merged from Portfolio Account Intelligence Schema ---
+  "executive_summary": {
+    "portfolio_health": "string",
+    "key_observation": "string",
+    "top_strength": "string",
+    "top_risk": "string"
+  },
+  "portfolio_strengths": [
+    {
+      "title": "string",
+      "description": "string",
+      "supporting_accounts": ["string"],
+      "business_impact": "string"
+    }
+  ],
+  "portfolio_gaps": [
+    {
+      "title": "string",
+      "description": "string",
+      "affected_accounts": ["string"],
+      "business_impact": "string"
+    }
+  ],
+  "portfolio_risks": [
+    {
+      "title": "string",
+      "description": "string",
+      "affected_accounts": ["string"],
+      "risk_level": "string",
+      "business_impact": "string"
+    }
+  ],
+  "success_models": [
+    {
+      "title": "string",
+      "source_account": "string",
+      "what_worked": "string",
+      "why_it_worked": "string",
+      "business_outcome": "string",
+      "replication_potential": "string"
+    }
+  ],
+  "replication_opportunities": [
+    {
+      "source_account": "string",
+      "target_accounts": ["string"],
+      "opportunity": "string",
+      "rationale": "string",
+      "expected_outcome": "string"
+    }
+  ],
+  "portfolio_observations": [
+    "string"
+  ]
+}
 
 PE_PROOF_POINT_SCHEMA = {
+  "executive_summary": {
+    "core_strength": "string",
+    "strongest_differentiator": "string",
+    "transformation_focus": "string"
+  },
+  "core_capabilities": [
+    {
+      "capability": "string",
+      "problem_solved": "string",
+      "business_value": "string",
+      "applicable_industries": ["string"],
+      "applicable_use_cases": ["string"]
+    }
+  ],
+  "transformation_programs": [
+    {
+      "name": "string",
+      "description": "string",
+      "expected_business_outcomes": ["string"]
+    }
+  ],
+  "competitive_differentiators": [
+    {
+      "title": "string",
+      "description": "string",
+      "business_value": "string"
+    }
+  ],
   "proof_points": [
     {
       "proof_point_id": "string",
@@ -566,7 +829,13 @@ PE_PROOF_POINT_SCHEMA = {
       "stakeholder_type": ["string"],
       "reusability": "low | medium | high",
       "ideal_target_profile": ["string"],
-      "proof_strength": "low | medium | high"
+      "proof_strength": "low | medium | high",
+      # Merged user's Capability Intelligence Schema fields:
+      "title": "string",
+      "challenge": "string",
+      "approach": "string",
+      "outcome": "string",
+      "confidence": "string"
     }
   ]
 }
@@ -663,6 +932,14 @@ PE_WHITESPACE_SCHEMA = {
 }
 
 PE_EXECUTIVE_STRATEGY_SCHEMA = {
+  "executive_summary": {
+    "portfolio_state": "string",
+    "what_is_working": "string",
+    "what_is_missing": "string",
+    "largest_opportunity": "string",
+    "largest_risk": "string",
+    "leadership_message": "string"
+  },
   "portfolio_themes": [
     {
       "theme": "string",
@@ -699,6 +976,7 @@ SCHEMAS = {
     "account_executive_synthesis": ACCOUNT_EXECUTIVE_SYNTHESIS_SCHEMA,
     "private_equity": PE_SCHEMA,
     "any_document":   ANY_DOCUMENT_SCHEMA,
+    "pe_research": PE_RESEARCH_INTELLIGENCE_SCHEMA,
     "pe_portfolio": PE_PORTFOLIO_SCHEMA,
     "pe_proof_point": PE_PROOF_POINT_SCHEMA,
     "pe_buying_signal": PE_BUYING_SIGNAL_SCHEMA,

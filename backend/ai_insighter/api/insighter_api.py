@@ -82,11 +82,11 @@ def _build_pe_inputs(pe: PrivateEquity) -> tuple[list[dict[str, Any]], dict[str,
             "account_id":   str(a.id),
             "account_name": a.name,
             "is_client":    bool(getattr(a, "is_client", False)),
+            "CLIENT_STATUS": "EXISTING CLIENT ACCOUNT" if getattr(a, "is_client", False) else "NON-CLIENT ACCOUNT",
             "industry":     getattr(a, "industry", None),
-            "insight":      a.account_insights,
+            "insight":      a.account_insights or {},
         }
         for a in pe.accounts
-        if a.account_insights is not None
     ]
     company_capabilities = dict(getattr(pe, 'company_capabilities', None) or {})
     pe_documents_list = getattr(pe, 'documents', [])
@@ -131,6 +131,8 @@ def generate_project_insights(
             "project_id":        str(project.id),
             "project_name":      project.name,
             "account_id":        str(project.account_id),
+            "is_client":         bool(getattr(project.account, 'is_client', False)) if project.account else False,
+            "industry":          getattr(project.account, 'industry', None) or '' if project.account else '',
             "status":            project.status,
             "from_date":         str(project.from_date) if project.from_date is not None else None,
             "to_date":           str(project.to_date) if project.to_date is not None else None,
@@ -220,6 +222,7 @@ def generate_account_insights(
         account_data = {
             "account_id":   str(account.id),
             "account_name": account.name,
+            "is_client":    bool(getattr(account, 'is_client', False)),
             "industry":     getattr(account, 'industry', None) or '',
             "region":       getattr(account, 'region', None) or '',
             "revenue":      getattr(account, 'revenue_data', None) or [],

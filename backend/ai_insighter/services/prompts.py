@@ -188,6 +188,10 @@ class PromptsTemplates:
         
         Focus on measurable business value.
         
+        Tailor the strategic focus using:
+        - is_client: if true, focus on account retention, scaling, and operational value. If false, focus on initial entry, credentials, and competitive displacement.
+        - industry: frame all findings and suggestions within the specific industry context of the account.
+        
         ---
         
         ## 6. Insight Rules
@@ -512,8 +516,8 @@ class PromptsTemplates:
         - transformation_readiness
 
         # RULES
-        - Classify archetype with rationale.
-        - Classify buying signal strength and expansion potential.
+        - Classify archetype with rationale, referencing the account's industry context.
+        - Classify buying signal strength and expansion potential. If is_client is false, focus signals on conversion, initial engagement hooks, and entry-point capabilities. If is_client is true, focus signals on cross-selling, retention, and service-line expansion.
         - Classify readiness as ready | partially_ready | high_resistance_risk.
         - Return only JSON.
         """
@@ -545,6 +549,7 @@ class PromptsTemplates:
         # RULES
         - Use actual project names from input.
         - Keep recommendations measurable and decision-grade.
+        - Tailor opportunities and recommendations based on the account's industry and client status (is_client: true/false).
         - Return only JSON.
         """
     PE_PROMPT = """
@@ -817,21 +822,41 @@ class PromptsTemplates:
         No markdown.
         No explanations outside JSON.
         """
+    PE_RESEARCH_PROMPT = """
+        You are a Private Equity Research Intelligence Analyst AI.
+
+        Your role is to analyze Private Equity research and strategy documents to extract the core investment thesis, transformation priorities, growth focuses, and business pressures.
+
+        # OBJECTIVE
+        Extract strategic intent and market signals to produce PE Research Intelligence.
+
+        # DATA
+        ## 1. PE Research / Strategy Document
+        {pe_research_document}
+
+        # INSTRUCTIONS
+        1. Extract the core investment thesis, transformation focus, growth focus, and primary business pressures.
+        2. Identify specific strategic priorities and categorize their importance.
+        3. Extract investment themes, growth signals, and transformation signals along with their supporting evidence.
+        4. Identify business pressures and their impact.
+        5. Formulate logical portfolio hypotheses based on the strategy, citing supporting evidence and estimating confidence.
+        6. Keep outputs specific, evidence-backed, and decision-grade.
+
+        # OUTPUT RULES
+        - Return only JSON matching the PE Research Intelligence Schema.
+        - No markdown, no prose outside JSON.
+        """
+
     PE_PORTFOLIO_PROMPT = """
         You are a Private Equity Portfolio Intelligence Analyst AI.
 
         Your role is to analyze PE research context, account-level insights, and capability data to produce portfolio-level operational and transformation intelligence.
 
         # OBJECTIVE
-        Generate structured portfolio intelligence that identifies:
-        - recurring portfolio patterns
-        - cross-account risks and contradictions
-        - PE strategy alignment gaps
-        - capability-to-gap mapping
-        - portfolio-level transformation themes
+        Generate structured portfolio intelligence conforming to the merged Portfolio Account Intelligence schema.
 
         # DATA
-        ## 1. PE Research / Context
+        ## 1. PE Research Context / Intelligence
         {pe_research_document}
 
         ## 2. Portfolio Account Insights
@@ -841,12 +866,16 @@ class PromptsTemplates:
         {data}
 
         # INSTRUCTIONS
-        1. Think at portfolio level only; do not summarize each account one by one.
-        2. Only mark a pattern as portfolio-wide if it appears in 2+ accounts.
-        3. For each major claim, cite account evidence in the relevant fields.
-        4. Explicitly identify contradictions between strategy intent and execution reality.
-        5. If signal is weak/missing, return empty lists instead of generic filler.
-        6. Keep outputs specific, evidence-backed, and decision-grade.
+        1. Distinguish account types first using the "is_client" boolean property in "Portfolio Account Insights":
+           - Accounts with "is_client" = true are existing CLIENT holdings.
+           - Accounts with "is_client" = false are target holdings (NON-CLIENTS). Do NOT refer to non-client accounts as "our clients" or assume we are actively delivering projects or services for them.
+        2. Think at portfolio level only; do not summarize each account one by one.
+        3. Only mark a pattern as portfolio-wide if it appears in 2+ accounts.
+        4. For each major claim, cite account evidence in the relevant fields.
+        5. Explicitly identify contradictions between strategy intent and execution reality.
+        6. Identify portfolio strengths, gaps, risks, success models, and replication opportunities based on account insights.
+        7. If signal is weak/missing, return empty lists/fields instead of generic filler.
+        8. Keep outputs specific, evidence-backed, and decision-grade.
 
         # OUTPUT RULES
         - Return only JSON matching the required schema.
@@ -858,7 +887,7 @@ class PromptsTemplates:
         Your role is to synthesize portfolio intelligence, buying signals, whitespace opportunities, and proof points into leadership-ready strategic recommendations.
 
         # OBJECTIVE
-        Produce executive-grade strategy narratives and prioritized expansion agenda.
+        Produce executive-grade strategy narratives, executive portfolio synthesis, and a prioritized expansion agenda.
 
         # DATA
         ## 1. Portfolio Intelligence
@@ -867,7 +896,7 @@ class PromptsTemplates:
         ## 2. Whitespace Opportunities
         {whitespace_opportunities}
 
-        ## 3. Proof Points
+        ## 3. Proof Points / Capability Intelligence
         {proof_points}
 
         ## 4. Buying Signals
@@ -876,20 +905,27 @@ class PromptsTemplates:
         ## 5. Company Capabilities
         {data}
 
+        ## 6. Portfolio Accounts Client Status
+        {account_insights}
+
         # INSTRUCTIONS
         1. Generate portfolio-level strategic themes (not account summaries).
-        2. Build clear narratives in this form:
+        2. Synthesize an executive summary outlining the portfolio state, what is working, what is missing, largest opportunity, largest risk, and leadership message.
+        3. Build clear narratives in this form:
         "Given X recurring pattern, applying Y capability proven in Z account can achieve A outcome."
-        3. Create prioritized tiers:
-        - Tier 1: immediate action
-        - Tier 2: strategic expansion
-        - Tier 3: watchlist
-        4. Prioritization should consider urgency, proof strength, capability fit, PE alignment, and client/non-client strategy.
-        5. Include concise leadership recommendations with rationale and expected business outcomes.
-        6. Ensure non-client targets include:
-        - why this company is targetable
-        - best proof-point to use from an existing client account
-        7. Keep outputs evidence-backed and board-ready.
+        Ensure that Z represents a proven client account ("is_client" = true) and the target represents a relevant expansion account.
+        4. Create prioritized tiers:
+           - Tier 1: immediate action (highly aligned targets)
+           - Tier 2: strategic expansion
+           - Tier 3: watchlist
+        5. Prioritization must strictly respect client status:
+           - Existing client accounts ("CLIENT_STATUS" = "EXISTING CLIENT ACCOUNT") should only be evaluated for client expansion/growth.
+           - Non-client accounts ("CLIENT_STATUS" = "NON-CLIENT ACCOUNT") should only be evaluated for market acquisition/target whitespace.
+        6. Include concise leadership recommendations with rationale and expected business outcomes.
+        7. Ensure non-client targets include:
+           - why this company is targetable
+           - best proof-point to use from an existing client account
+        8. Keep outputs evidence-backed and board-ready.
 
         # OUTPUT RULES
         - Return only JSON matching the executive-strategy schema.
@@ -919,19 +955,19 @@ class PromptsTemplates:
         ## 4. Company Capabilities
         {data}
 
+        ## 5. Portfolio Accounts Client Status
+        {account_insights}
+
         # INSTRUCTIONS
-        1. Distinguish account types first:
-        - client accounts: focus on expansion opportunities, risk signals, and deeper transformation potential
-        - non-client accounts: focus on whitespace opportunities, pain points, entry strategy, and capability alignment
-        2. Identify high-potential non-client targets where:
-        - transformation urgency is high
-        - buying signals are strong
-        - capability fit exists
-        - relevant proof point exists
-        3. For every non-client target, explicitly provide:
-        - WHY THIS COMPANY IS TARGETABLE
-        - BEST PROOF-POINT TO USE (which existing client story should be used)
-        4. For every non-client target, provide this exact chain:
+        1. Distinguish account types first using the "CLIENT_STATUS" string property in "Portfolio Accounts Client Status":
+        - CLIENT ACCOUNTS: Those with "CLIENT_STATUS" = "EXISTING CLIENT ACCOUNT". Focus on expansion opportunities, risk signals, and deeper transformation potential. Place them ONLY in the "client_accounts_analysis" section. Do NOT list them in the non-client targets or whitespace opportunities sections.
+        - NON-CLIENT ACCOUNTS: Those with "CLIENT_STATUS" = "NON-CLIENT ACCOUNT". Focus on whitespace opportunities, pain points, entry strategy, and capability alignment. Place them ONLY in the "non_client_portfolio_expansion_intelligence" and "whitespace_opportunities" sections.
+        CRITICAL REJECTION RULE: You are FORBIDDEN from placing an account with "CLIENT_STATUS" = "NON-CLIENT ACCOUNT" into the "client_accounts_analysis" section!
+        2. Evaluate EVERY non-client account in the portfolio for market expansion opportunities. You MUST include an analysis for each non-client account listed. Do not skip any. If you lack sufficient data for an account, you MUST still include it and use "Insufficient data" for the text fields.
+        3. For every non-client account, explicitly provide:
+        - WHY THIS COMPANY IS TARGETABLE (Use "Insufficient data" if unknown)
+        - BEST PROOF-POINT TO USE (Use "Insufficient data" if unknown)
+        4. For every non-client account, provide this exact chain:
         Gap -> Capability -> Proof-Point -> Entry Strategy -> Expected Business Outcome
         5. Add PORTFOLIO-WIDE PROGRAM OPPORTUNITIES for repeatable multi-account problems.
         6. Add TARGET PRIORITIZATION views:
@@ -967,21 +1003,22 @@ class PromptsTemplates:
         {data}
 
         # INSTRUCTIONS
-        1. Detect signals such as:
+        1. Distinguish account types first using the "CLIENT_STATUS" string property: detect buying signals and commercial urgency for both clients ("CLIENT_STATUS" = "EXISTING CLIENT ACCOUNT") and non-clients ("CLIENT_STATUS" = "NON-CLIENT ACCOUNT"), but clearly flag them based on their status.
+        2. Detect signals such as:
         - modernization pressure
         - repeated delivery instability
         - AI transformation gap
         - governance breakdown
         - scalability bottlenecks
         - leadership mandate / strategy mismatch
-        2. For each signal include:
+        3. For each signal include:
         - affected account(s)
         - urgency (high/medium/low)
         - confidence (high/medium/low)
         - rationale/evidence
-        3. Separate true buying signals from generic issues.
-        4. Prioritize signals that are recurring or tied to PE strategic goals.
-        5. If no evidence for a category, return empty list.
+        4. Separate true buying signals from generic issues.
+        5. Prioritize signals that are recurring or tied to PE strategic goals.
+        6. If no evidence for a category, return empty list.
 
         # OUTPUT RULES
         - Return only JSON matching the buying-signal schema.
@@ -989,39 +1026,38 @@ class PromptsTemplates:
         """
 
     PE_PROOF_POINT_PROMPT = """
-        You are a Transformation Proof-Point Extraction AI.
+        You are a Capability & Transformation Proof-Point Intelligence AI.
 
-        Your role is to mine portfolio account insights and identify reusable, evidence-backed transformation proof points.
+        Your role is to analyze portfolio account insights and company capabilities to extract reusable, evidence-backed transformation proof points, core capabilities, transformation programs, and competitive differentiators.
 
         # OBJECTIVE
-        Extract high-quality proof points that can be reused for commercial positioning and cross-account replication.
+        Produce structured capability intelligence that can be used for commercial positioning and cross-account replication.
 
         # DATA
         ## 1. Portfolio Account Insights
         {account_insights_list}
 
-        ## 2. PE Research / Context
+        ## 2. PE Research Context / Intelligence
         {pe_research_document}
 
         ## 3. Company Capabilities
         {data}
 
         # INSTRUCTIONS
-        1. Identify successful transformations with measurable outcomes.
-        2. Convert each success into a reusable model:
-        - problem
-        - approach
-        - capabilities used
-        - outcomes achieved
-        - where it can be replicated
-        3. Prefer proof points with concrete outcomes (time, quality, revenue, risk reduction).
-        4. Include source account(s) clearly.
-        5. Mark proof strength based on evidence quality (high/medium/low).
-        6. Do not invent metrics; if unknown, keep wording factual.
+        1. Distinguish account types first using the "CLIENT_STATUS" string property in "Portfolio Account Insights":
+           - Only extract proof points (reusable success case studies) from existing client accounts ("CLIENT_STATUS" = "EXISTING CLIENT ACCOUNT").
+           - Do NOT extract proof points from non-client accounts ("CLIENT_STATUS" = "NON-CLIENT ACCOUNT"), as we do not provide active transformation services for them.
+        2. Identify successful transformations with measurable outcomes.
+        3. Extract core capabilities demonstrated across the accounts, detailing problems solved, business value, applicable industries, and use cases.
+        4. Extract transformation programs and their expected business outcomes.
+        5. Extract proof points (reusable case studies) with challenges, approaches, concrete outcomes, and capabilities used.
+        6. Extract competitive differentiators with their business value.
+        7. Prefer concrete metrics (time, quality, revenue, risk reduction).
+        8. Keep outputs specific, evidence-backed, and decision-grade.
 
         # OUTPUT RULES
-        - Return only JSON matching the proof-point schema.
-        - No markdown, no explanation outside JSON.
+        - Return only JSON matching the required schema.
+        - No markdown, no prose outside JSON.
         """
     
     ANY_DOCUMENT_PROMPT = """
@@ -1151,4 +1187,5 @@ PromptsTemplates.PE_PORTFOLIO_PROMPT += EVIDENCE_GUARDRAILS
 PromptsTemplates.PE_PROOF_POINT_PROMPT += EVIDENCE_GUARDRAILS
 PromptsTemplates.PE_BUYING_SIGNAL_PROMPT += EVIDENCE_GUARDRAILS
 PromptsTemplates.PE_WHITESPACE_PROMPT += EVIDENCE_GUARDRAILS
+PromptsTemplates.PE_RESEARCH_PROMPT += EVIDENCE_GUARDRAILS
 PromptsTemplates.PE_EXECUTIVE_STRATEGY_PROMPT += EVIDENCE_GUARDRAILS

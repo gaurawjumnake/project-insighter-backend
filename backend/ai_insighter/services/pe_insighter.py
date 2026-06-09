@@ -34,6 +34,21 @@ def _run_prompt(
     )
 
 
+def analyse_pe_research(
+    company_capabilities: dict,
+    pe_research_document: Any,
+) -> dict:
+    prompt_template = PromptsTemplates.PE_RESEARCH_PROMPT.replace(
+        "{pe_research_document}", _to_str(pe_research_document)
+    )
+
+    return _run_prompt(
+        company_capabilities=company_capabilities,
+        prompt_template=prompt_template,
+        schema_key="pe_research",
+    )
+
+
 def analyse_portfolio_intelligence(
     company_capabilities: dict,
     account_insights: list,
@@ -93,6 +108,7 @@ def generate_whitespace_opportunities(
     portfolio_insights: dict,
     proof_points: dict,
     buying_signals: dict,
+    account_insights: list = None,
 ) -> dict:
     prompt_template = PromptsTemplates.PE_WHITESPACE_PROMPT.replace(
         "{portfolio_insights}", _to_str(portfolio_insights)
@@ -100,6 +116,8 @@ def generate_whitespace_opportunities(
         "{proof_points}", _to_str(proof_points)
     ).replace(
         "{buying_signals}", _to_str(buying_signals)
+    ).replace(
+        "{account_insights}", _to_str(account_insights or [])
     )
 
     return _run_prompt(
@@ -115,6 +133,7 @@ def generate_executive_strategy(
     whitespace_opportunities: dict,
     proof_points: dict,
     buying_signals: dict,
+    account_insights: list = None,
 ) -> dict:
     prompt_template = PromptsTemplates.PE_EXECUTIVE_STRATEGY_PROMPT.replace(
         "{portfolio_insights}", _to_str(portfolio_insights)
@@ -124,6 +143,8 @@ def generate_executive_strategy(
         "{proof_points}", _to_str(proof_points)
     ).replace(
         "{buying_signals}", _to_str(buying_signals)
+    ).replace(
+        "{account_insights}", _to_str(account_insights or [])
     )
 
     return _run_prompt(
@@ -138,26 +159,31 @@ def run_full_pe_strategy(
     account_insights: list,
     pe_research_document: Any,
 ) -> dict:
+    pe_research_insights = analyse_pe_research(
+        company_capabilities=company_capabilities,
+        pe_research_document=pe_research_document,
+    )
     portfolio_insights = analyse_portfolio_intelligence(
         company_capabilities=company_capabilities,
         account_insights=account_insights,
-        pe_research_document=pe_research_document,
+        pe_research_document=pe_research_insights,
     )
     proof_points = extract_proof_points(
         company_capabilities=company_capabilities,
         account_insights=account_insights,
-        pe_research_document=pe_research_document,
+        pe_research_document=pe_research_insights,
     )
     buying_signals = detect_buying_signals(
         company_capabilities=company_capabilities,
         account_insights=account_insights,
-        pe_research_document=pe_research_document,
+        pe_research_document=pe_research_insights,
     )
     whitespace_opportunities = generate_whitespace_opportunities(
         company_capabilities=company_capabilities,
         portfolio_insights=portfolio_insights,
         proof_points=proof_points,
         buying_signals=buying_signals,
+        account_insights=account_insights,
     )
     executive_strategy = generate_executive_strategy(
         company_capabilities=company_capabilities,
@@ -165,9 +191,11 @@ def run_full_pe_strategy(
         whitespace_opportunities=whitespace_opportunities,
         proof_points=proof_points,
         buying_signals=buying_signals,
+        account_insights=account_insights,
     )
 
     return {
+        "pe_research_insights": pe_research_insights,
         "portfolio_insights": portfolio_insights,
         "proof_points": proof_points,
         "buying_signals": buying_signals,
