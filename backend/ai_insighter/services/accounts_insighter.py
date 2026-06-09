@@ -175,6 +175,7 @@ def run_full_account_intelligence(
 
     combined["account_id"] = account_data.get("account_id")
     combined["account_name"] = account_data.get("account_name")
+    combined["is_client"] = bool(account_data.get("is_client", False))  # <-- ADD THIS HERE TO SAVE IT IN DB
     return combined
 
 
